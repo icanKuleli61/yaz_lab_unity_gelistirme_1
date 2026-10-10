@@ -1,12 +1,13 @@
 using System;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
 public class OyuncuKontrol : MonoBehaviour
 {
 
     [SerializeField]
-    private GemiHareket gemiHareket;
+    private GemiHareket gemiHareket ;
 
     [SerializeField]
     private Camera camera;
@@ -14,7 +15,11 @@ public class OyuncuKontrol : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if (EventSystem.current != null &&
+        EventSystem.current.IsPointerOverGameObject())
+        {
+            return;
+        }
 
         if (Mouse.current == null)
         {
@@ -36,9 +41,6 @@ public class OyuncuKontrol : MonoBehaviour
                 gemiHareket.HareketEt(hedefKonum);
             }
         }
-
-
-   
 
     }
 }

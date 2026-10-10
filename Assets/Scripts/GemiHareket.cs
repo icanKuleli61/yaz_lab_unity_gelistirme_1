@@ -3,37 +3,23 @@ using UnityEngine;
 
 public class GemiHareket : MonoBehaviour
 {
+
+    private Gemi aktifGemi;
     private GemiData gemiData;
 
     [SerializeField]
     private Transform gemiUcu;
 
-    private void Awake()
+    public void GemiAta(Gemi aktifGemi)
     {
-        gemiData = new GemiData(
-            "Solace",
-            15f,  
-            210f, 
-            100f, 
-            100f, 
-            20f   
-        );
-
-        if (gemiUcu == null)
+        if (aktifGemi == null)
         {
-            Transform bulunanUcu = transform.Find("GemiUcu");
-            if (bulunanUcu != null)
-            {
-                gemiUcu = bulunanUcu;
-            }
-            else
-            {
-                Debug.LogError(
-                    "GemiUcu bulunamadı! Inspector'dan referansını bağla.",
-                    this
-                );
-            }
+            throw new System.Exception("Gemi atanmadı");
         }
+
+        this.aktifGemi = aktifGemi;
+        gemiData = this.aktifGemi.getGemiVerileri();
+               
     }
 
     void Start()
@@ -46,8 +32,36 @@ public class GemiHareket : MonoBehaviour
         
     }
 
+    private bool IsEngelVarmi()
+    {
+        Vector3 hareketYonu = gemiUcu.forward;
+        hareketYonu.y = 0f;
+        hareketYonu.Normalize();
+
+        float kontrolMesafesi = gemiData.GetGemiHizi() * Time.deltaTime;
+
+        if (Physics.SphereCast(
+            gemiUcu.position,
+            0.5f,
+            hareketYonu,
+            out RaycastHit hit,
+            kontrolMesafesi
+        ))
+        {
+            Debug.Log("Tespit edilen nesne: " + hit.collider.name);
+            return true;
+        }
+
+        return false;
+    }
     public void HareketEt(Vector3 hedefKonum)
     {
+
+        if (IsEngelVarmi())
+        {
+            return;
+        }
+
         Vector3 gidilecekKonumMesafe = hedefKonum - transform.position;
 
         gidilecekKonumMesafe.y = 0f;
