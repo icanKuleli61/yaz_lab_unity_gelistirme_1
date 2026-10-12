@@ -13,7 +13,7 @@ public class SolorisUzayGemisi : Gemi
     public static SolorisUzayGemisi GemiInitilaze()
     {
         if(solorisGemi == null)
-        {   GemiData gemiVerisi = new GemiData(GemiTuru.Soloris,15f,210f,700f,900f,20,100);
+        {   GemiData gemiVerisi = new GemiData(GemiTuru.Soloris,15f,210f,900f,900f,20,100);
             solorisGemi = new SolorisUzayGemisi(gemiVerisi);
         }
         solorisGemiData = solorisGemi.getGemiVerileri();
@@ -30,6 +30,7 @@ public class SolorisUzayGemisi : Gemi
     public override void HasarAl(float hasar)
     {
         solorisGemi.getGemiVerileri().HasarUygulama(hasar);
+
     }
 
     public override void Iyiles()

@@ -13,13 +13,10 @@ public class OyuncuPanelUi : MonoBehaviour
 
     public void CanGuncelle(float mevcutCan, float maksimumCan)
     {
-        float canOrani = maksimumCan > 0
-            ? Mathf.Clamp01(mevcutCan / maksimumCan)
-            : 0f;
+        float canOrani = maksimumCan > 0 ? Mathf.Clamp01(mevcutCan / maksimumCan) : 0f;
 
         canBari.fillAmount = canOrani;
 
-        canDegeriText.text =
-            $"{mevcutCan:0} / {maksimumCan:0} HP";
+        canDegeriText.text = $"{mevcutCan:0} / {maksimumCan:0} HP";
     }
 }
