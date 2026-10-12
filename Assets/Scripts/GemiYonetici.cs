@@ -36,7 +36,7 @@ public class GemiYonetici : MonoBehaviour
     }
 
 
-    public void CanArayuzunuGuncelle()
+    private void CanArayuzunuGuncelle()
     {
         if (aktifGemi == null || oyuncuPanelUı == null)
             return;
