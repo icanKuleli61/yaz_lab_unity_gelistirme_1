@@ -41,11 +41,19 @@ public  class GemiData
 
     public void HasarUygulama(float hasarAl)
     {
+        if(hasarAl < 0)
+        {
+            return;
+        }
         _anlikcan = Mathf.Clamp(_anlikcan - hasarAl, 0f, _maxsimumCan);
     }
 
     public void TamirEt(float tamirCanı)
     {
+        if(tamirCanı < 0)
+        {
+            return;
+        }
         _anlikcan = Mathf.Clamp(_anlikcan + tamirCanı, 0f, _maxsimumCan);
     }
 }

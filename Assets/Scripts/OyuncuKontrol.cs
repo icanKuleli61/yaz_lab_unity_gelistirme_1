@@ -29,7 +29,6 @@ public class OyuncuKontrol : MonoBehaviour
         if (Mouse.current.leftButton.isPressed)
         {
             Vector2 ekranTiklamaKonumu = Mouse.current.position.ReadValue();
-            Debug.Log(ekranTiklamaKonumu);
             Ray isin = camera.ScreenPointToRay(ekranTiklamaKonumu);
 
 

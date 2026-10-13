@@ -19,9 +19,8 @@ public class OyunYonetici : MonoBehaviour
 
     private bool _oyunBittiMi = false;
 
-
-
-
+    [SerializeField]
+    private AudioClip _gemiPatlamaSesi;
 
 
     public void GemiPatladi()
@@ -30,6 +29,11 @@ public class OyunYonetici : MonoBehaviour
             return;
 
         _oyunBittiMi = true;
+
+        AudioSource.PlayClipAtPoint(
+        _gemiPatlamaSesi,
+        aktifGemiTransformu.position
+         );
 
         Instantiate(
             _patlamaEfekti,

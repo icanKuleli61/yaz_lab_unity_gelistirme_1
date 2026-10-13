@@ -2,13 +2,25 @@ using UnityEngine;
 
 public class MiniHaritaKontrol : MonoBehaviour
 {
-    [SerializeField] private Transform oyuncuGemi;
-    [SerializeField] private Transform zemin;
-    [SerializeField] private Transform portal;
+    [SerializeField] 
+    private Transform oyuncuGemi;
+    [SerializeField] 
+    private Transform zemin;
+    [SerializeField] 
+    private Transform portal;
 
-    [SerializeField] private RectTransform haritaArkaPlan;
-    [SerializeField] private RectTransform oyuncuIkonu;
-    [SerializeField] private RectTransform portalIkonu;
+    [SerializeField]
+    private Transform kalkanKaldirmaPortali;
+
+    [SerializeField] 
+    private RectTransform haritaArkaPlan;
+    [SerializeField] 
+    private RectTransform oyuncuIkonu;
+    [SerializeField] 
+    private RectTransform portalIkonu;
+
+    [SerializeField]
+    private RectTransform kalkanKaldirmaPortaliIcon;
 
     private void LateUpdate()
     {
@@ -28,6 +40,7 @@ public class MiniHaritaKontrol : MonoBehaviour
 
         OyuncuIkonunuGuncelle(minX, maxX, minZ, maxZ);
         PortalIkonunuGuncelle(minX, maxX, minZ, maxZ);
+        KalkanKaldirmaPortaliIkonunuGuncelle(minX, maxX, minZ, maxZ);
     }
 
     private void OyuncuIkonunuGuncelle(
@@ -72,6 +85,19 @@ public class MiniHaritaKontrol : MonoBehaviour
             return;
 
         portalIkonu.anchoredPosition =  KonumuHaritayaCevir(konum, minX, maxX, minZ, maxZ);
+    }
+
+
+    private void KalkanKaldirmaPortaliIkonunuGuncelle(
+        float minX, float maxX, float minZ, float maxZ)
+    {
+        if (kalkanKaldirmaPortali == null ||
+            kalkanKaldirmaPortaliIcon == null)
+            return;
+
+        Vector3 konum = kalkanKaldirmaPortali.position;
+
+        kalkanKaldirmaPortaliIcon.anchoredPosition =  KonumuHaritayaCevir( konum, minX, maxX, minZ, maxZ);
     }
 
     private Vector2 KonumuHaritayaCevir(

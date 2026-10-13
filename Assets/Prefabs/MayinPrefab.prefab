@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1001 &4359525002536808568
+--- !u!1001 &482136371173897435
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -10,31 +10,31 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8098169881513260187, guid: f81bf9509d327fb48b3f4f37387dc5a3, type: 3}
       propertyPath: m_Name
-      value: mayin
+      value: MayinPrefab
       objectReference: {fileID: 0}
     - target: {fileID: 3447742079981357586, guid: f81bf9509d327fb48b3f4f37387dc5a3, type: 3}
       propertyPath: m_LocalScale.x
-      value: 1
+      value: 0.07
       objectReference: {fileID: 0}
     - target: {fileID: 3447742079981357586, guid: f81bf9509d327fb48b3f4f37387dc5a3, type: 3}
       propertyPath: m_LocalScale.y
-      value: 1
+      value: 0.6
       objectReference: {fileID: 0}
     - target: {fileID: 3447742079981357586, guid: f81bf9509d327fb48b3f4f37387dc5a3, type: 3}
       propertyPath: m_LocalScale.z
-      value: 1
+      value: 0.07
       objectReference: {fileID: 0}
     - target: {fileID: 3447742079981357586, guid: f81bf9509d327fb48b3f4f37387dc5a3, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 74.494
+      value: 1.282
       objectReference: {fileID: 0}
     - target: {fileID: 3447742079981357586, guid: f81bf9509d327fb48b3f4f37387dc5a3, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.3
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 3447742079981357586, guid: f81bf9509d327fb48b3f4f37387dc5a3, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 78.79
+      value: 1.076
       objectReference: {fileID: 0}
     - target: {fileID: 3447742079981357586, guid: f81bf9509d327fb48b3f4f37387dc5a3, type: 3}
       propertyPath: m_LocalRotation.w
@@ -67,5 +67,53 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: -8098169881513260187, guid: f81bf9509d327fb48b3f4f37387dc5a3, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 838006526145673918}
+    - targetCorrespondingSourceObject: {fileID: -8098169881513260187, guid: f81bf9509d327fb48b3f4f37387dc5a3, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4365493504491652181}
   m_SourcePrefab: {fileID: 3150474306388093854, guid: f81bf9509d327fb48b3f4f37387dc5a3, type: 3}
+--- !u!1 &661291509030535102 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: -8098169881513260187, guid: f81bf9509d327fb48b3f4f37387dc5a3, type: 3}
+  m_PrefabInstance: {fileID: 482136371173897435}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &838006526145673918
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 661291509030535102}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2564b0f59d298044f9926f7e315799b8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MayinKontrol
+  _patlamaEfekti: {fileID: 5135180249744068318, guid: 6575cf55d0e588044bcfd51397f62d8c, type: 3}
+  _aktifGemiYonetici: {fileID: 0}
+  _patlamaSesi: {fileID: 8300000, guid: 60439301a0a5f9646aeb59ca7562452a, type: 3}
+  _hasarMiktari: 400
+--- !u!135 &4365493504491652181
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 661291509030535102}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 1.0155557
+  m_Center: {x: 0.0018199853, y: 0.094810724, z: -0.0012625116}

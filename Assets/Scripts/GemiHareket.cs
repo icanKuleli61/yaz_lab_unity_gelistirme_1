@@ -34,6 +34,12 @@ public class GemiHareket : MonoBehaviour
 
     private bool IsEngelVarmi()
     {
+
+        if (gemiUcu == null || gemiData == null)
+        {
+            return false;
+        }
+
         Vector3 hareketYonu = gemiUcu.forward;
         hareketYonu.y = 0f;
         hareketYonu.Normalize();
@@ -48,14 +54,20 @@ public class GemiHareket : MonoBehaviour
             kontrolMesafesi
         ))
         {
-            Debug.Log("Tespit edilen nesne: " + hit.collider.name);
-            return true;
+            if (hit.collider.CompareTag("EnerjiKalkani"))
+            {
+                Debug.Log("Tespit edilen kalkan: " + hit.collider.name);
+                return true;
+            }
+
         }
 
         return false;
     }
     public void HareketEt(Vector3 hedefKonum)
     {
+        if (gemiUcu == null || gemiData == null)
+            return;
 
         if (IsEngelVarmi())
         {

@@ -48,7 +48,15 @@ public class GemiYonetici : MonoBehaviour
             gemiData.GetmaxsimumCan()
         );
     }
+    public void HasarVer(float hasarMiktari)
+    {
+        if (aktifGemi == null)
+            return;
 
+        aktifGemi.HasarAl(hasarMiktari);
+
+        GemiDurumunuKontrolEt();
+    }
 
     public void GemiDurumunuKontrolEt()
     {
