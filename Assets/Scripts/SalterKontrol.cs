@@ -12,6 +12,7 @@ public class SalterKontrol : MonoBehaviour
 
     [Header("Portal Ayarlari")]
     public Collider portalCollider;
+    public GameObject portalBilgiPaneli;
 
     public void SalteriAktifEt()
     {
@@ -23,7 +24,6 @@ public class SalterKontrol : MonoBehaviour
 
         aktifMi = true;
 
-        // Salteri acik yesile boya.
         if (salterRenderer != null)
         {
             salterRenderer.material.color = aktifRengi;
@@ -33,7 +33,6 @@ public class SalterKontrol : MonoBehaviour
             Debug.LogWarning("Salter Renderer atanmamis!");
         }
 
-        
         if (portalCollider != null)
         {
             portalCollider.enabled = false;
@@ -42,6 +41,11 @@ public class SalterKontrol : MonoBehaviour
         else
         {
             Debug.LogWarning("Portal Collider atanmamis!");
+        }
+
+        if (portalBilgiPaneli != null)
+        {
+            portalBilgiPaneli.SetActive(false);
         }
 
         Debug.Log("SALTER AKTIF EDILDI!");
