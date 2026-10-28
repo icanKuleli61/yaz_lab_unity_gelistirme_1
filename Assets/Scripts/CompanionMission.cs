@@ -95,6 +95,12 @@ public class CompanionMission : MonoBehaviour
 
     public void BaslatSalterGorevi()
     {
+        if (shipTransform == null)
+        {
+            Debug.LogWarning("Companion: Gemi artik mevcut degil!");
+            return;
+        }
+
         if (agent == null || !agent.enabled || !agent.isOnNavMesh)
             return;
 
@@ -119,6 +125,15 @@ public class CompanionMission : MonoBehaviour
 
     void Update()
     {
+        // Gemi yok edildiyse botun takip etmesini durdur.
+        if (shipTransform == null)
+        {
+            if (agent != null && agent.enabled && agent.isOnNavMesh)
+                agent.ResetPath();
+
+            return;
+        }
+
         if (agent == null || !agent.enabled || !agent.isOnNavMesh)
             return;
 
@@ -139,9 +154,13 @@ public class CompanionMission : MonoBehaviour
         {
             Debug.Log("Companion: Saltere ulastim!");
 
+            if (switchControl == null)
+                return;
+
             switchControl.SalteriAktifEt();
 
-            if (SetDestination(GemiYanindakiHedef()))
+            if (shipTransform != null &&
+                SetDestination(GemiYanindakiHedef()))
             {
                 state = MissionState.ReturningToShip;
                 Debug.Log("Companion: Gemiye geri donuyorum!");
@@ -157,6 +176,9 @@ public class CompanionMission : MonoBehaviour
 
     Vector3 GemiYanindakiHedef()
     {
+        if (shipTransform == null)
+            return transform.position;
+
         Vector3 hedef =
             shipTransform.position
             + shipTransform.right * takipYanMesafesi
@@ -169,6 +191,9 @@ public class CompanionMission : MonoBehaviour
 
     bool SetDestination(Vector3 targetPosition)
     {
+        if (agent == null || !agent.enabled || !agent.isOnNavMesh)
+            return false;
+
         NavMeshHit targetHit;
 
         if (!NavMesh.SamplePosition(
@@ -205,6 +230,9 @@ public class CompanionMission : MonoBehaviour
 
     bool HasArrived()
     {
+        if (agent == null || !agent.enabled || !agent.isOnNavMesh)
+            return false;
+
         if (agent.pathPending || !agent.hasPath)
             return false;
 

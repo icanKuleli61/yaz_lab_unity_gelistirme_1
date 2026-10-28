@@ -10,6 +10,10 @@ public class SalterKontrol : MonoBehaviour
     public Renderer salterRenderer;
     public Color aktifRengi = new Color(0.5f, 1f, 0.5f);
 
+    [Header("Portal Kalkan Ayarlari")]
+    public Renderer kalkanRenderer;
+    public Color kalkanAktifRengi = new Color(0.02f, 0.20f, 0.06f);
+
     [Header("Portal Ayarlari")]
     public Collider portalCollider;
     public GameObject portalBilgiPaneli;
@@ -24,6 +28,7 @@ public class SalterKontrol : MonoBehaviour
 
         aktifMi = true;
 
+        // Salterin rengini degistir.
         if (salterRenderer != null)
         {
             salterRenderer.material.color = aktifRengi;
@@ -33,6 +38,33 @@ public class SalterKontrol : MonoBehaviour
             Debug.LogWarning("Salter Renderer atanmamis!");
         }
 
+        // Portal kalkanini koyu yesile cevir.
+        if (kalkanRenderer != null)
+        {
+            Material kalkanMateryali = kalkanRenderer.material;
+
+            if (kalkanMateryali.HasProperty("_BaseColor"))
+            {
+                kalkanMateryali.SetColor("_BaseColor", kalkanAktifRengi);
+            }
+            else if (kalkanMateryali.HasProperty("_Color"))
+            {
+                kalkanMateryali.SetColor("_Color", kalkanAktifRengi);
+            }
+            else
+            {
+                Debug.LogWarning(
+                    "Kalkan materyalinde desteklenen renk ozelligi bulunamadi.");
+            }
+
+            Debug.Log("Portal kalkani koyu yesile cevrildi!");
+        }
+        else
+        {
+            Debug.LogWarning("Portal kalkan Renderer atanmamis!");
+        }
+
+        // Portalin colliderini kapat.
         if (portalCollider != null)
         {
             portalCollider.enabled = false;
@@ -43,6 +75,7 @@ public class SalterKontrol : MonoBehaviour
             Debug.LogWarning("Portal Collider atanmamis!");
         }
 
+        // Portal bilgi panelini gizle.
         if (portalBilgiPaneli != null)
         {
             portalBilgiPaneli.SetActive(false);
