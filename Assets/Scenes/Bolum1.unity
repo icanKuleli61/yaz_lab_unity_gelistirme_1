@@ -463,7 +463,7 @@ SphereCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -2585,7 +2585,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2906116991436775253, guid: d0bd7482581e6624a9144adbff7de729, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2906116991436775253, guid: d0bd7482581e6624a9144adbff7de729, type: 3}
       propertyPath: m_TagString
@@ -2816,6 +2816,37 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 636240743}
   m_CullTransparentMesh: 1
+--- !u!1 &640115725
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 640115726}
+  m_Layer: 0
+  m_Name: point
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &640115726
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 640115725}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.37800008, y: 0.06319768, z: 0.018092556, w: 0.9234688}
+  m_LocalPosition: {x: -0.00000039736426, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 714884458}
+  m_LocalEulerAnglesHint: {x: 44.095, y: 10.461, z: 6.491}
 --- !u!1001 &647153698
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3534,7 +3565,13 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 3447742079981357586, guid: 4406470264d612040b5943036c8c69b1, type: 3}
       insertIndex: -1
       addedObject: {fileID: 662543396}
-    m_AddedComponents: []
+    - targetCorrespondingSourceObject: {fileID: 3447742079981357586, guid: 4406470264d612040b5943036c8c69b1, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 640115726}
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: -8098169881513260187, guid: 4406470264d612040b5943036c8c69b1, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 888475862}
   m_SourcePrefab: {fileID: 3150474306388093854, guid: 4406470264d612040b5943036c8c69b1, type: 3}
 --- !u!1 &830020007
 GameObject:
@@ -3982,6 +4019,25 @@ Transform:
   - {fileID: 1702964649}
   m_Father: {fileID: 678449164}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &888475859 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: -8098169881513260187, guid: 4406470264d612040b5943036c8c69b1, type: 3}
+  m_PrefabInstance: {fileID: 769535405}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &888475862
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 888475859}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 74be0a175990ff04a9f92de584de1fee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PortalAnimasyonKontrol
+  portal_animasyon: {fileID: 5581149964585542923, guid: 05ffe292398b0504a9184265cd79ebf0, type: 3}
+  efektNoktasi: {fileID: 640115726}
 --- !u!1 &907996013
 GameObject:
   m_ObjectHideFlags: 0
@@ -8102,6 +8158,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PortalIkonuEtkilesim
   cerceve: {fileID: 1945552951}
   yildiz: {fileID: 938719506}
+  portalAnimasyonKontrol: {fileID: 888475862}
 --- !u!1001 &1977954254
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8439,7 +8496,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GemiHareket
   gemiUcu: {fileID: 726901454}
-  portalCerceveCollider: {fileID: 1945552954}
+  enerjiKalkaniCollider: {fileID: 0}
 --- !u!65 &2075320155
 BoxCollider:
   m_ObjectHideFlags: 0

@@ -9,6 +9,9 @@ public class PortalIkonuEtkilesim : MonoBehaviour
     [SerializeField]
     private GameObject yildiz;
 
+    [SerializeField]
+    private PortalAnimasyonKontrol portalAnimasyonKontrol;
+
     private float buyumeKatsayisi = 1.15f;
 
     private float donusHizi = 45f;
@@ -19,6 +22,7 @@ public class PortalIkonuEtkilesim : MonoBehaviour
 
     private Coroutine animasyonCoroutine;
 
+    private bool efektCalisiyor = false;
     private void Awake()
     {
         normalOlcekCerceve = cerceve.transform.localScale;
@@ -30,16 +34,16 @@ public class PortalIkonuEtkilesim : MonoBehaviour
     {
         
     }
-
     private void OnMouseDown()
     {
-        
+        portalAnimasyonKontrol.animasyonEtkin();
     }
 
     private void OnMouseUp()
     {
-        
+        portalAnimasyonKontrol.animasyonEtkinDeğil();
     }
+
     private void OnMouseEnter()
     {
         MouseCerceveyeGeldi();

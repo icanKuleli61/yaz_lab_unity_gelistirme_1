@@ -10,6 +10,12 @@ public class GemiHareket : MonoBehaviour
     [SerializeField]
     private Transform gemiUcu;
 
+    [SerializeField]
+    private SphereCollider enerjiKalkaniCollider;
+
+
+    private bool kalkanaDegiyorMu = false;
+
     public void GemiAta(Gemi aktifGemi)
     {
         if (aktifGemi == null)
@@ -64,17 +70,17 @@ public class GemiHareket : MonoBehaviour
 
         }
 
+        if (kalkanaDegiyorMu)
+        {
+            return true;
+        }
+
         return false;
     }
     public void HareketEt(Vector3 hedefKonum)
     {
         if (gemiUcu == null || gemiData == null)
             return;
-
-        if (IsEngelVarmi())
-        {
-            return;
-        }
 
 
 
@@ -100,8 +106,31 @@ public class GemiHareket : MonoBehaviour
             gemiData.GetDonusHizi() * Time.deltaTime
         );
 
+        if (IsEngelVarmi())
+        {
+            return;
+        }
+
         transform.position += gemiUcu.forward
                     * gemiData.GetGemiHizi()
                     * Time.deltaTime;
+    }
+
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.CompareTag("EnerjiKalkani")) {
+
+            kalkanaDegiyorMu = true;
+        }
+        
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject.CompareTag("EnerjiKalkani"))
+        {
+            kalkanaDegiyorMu = false;
+        }
     }
 }
