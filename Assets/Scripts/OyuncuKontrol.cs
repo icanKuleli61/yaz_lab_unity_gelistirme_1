@@ -32,6 +32,14 @@ public class OyuncuKontrol : MonoBehaviour
             Ray isin = camera.ScreenPointToRay(ekranTiklamaKonumu);
 
 
+            if (Physics.Raycast(isin, out RaycastHit hit))
+            {
+                if (hit.collider.CompareTag("PortalIkonu"))
+                {
+                    return; 
+                }
+            }
+
             Plane hareketDuzlemi = new Plane(Vector3.up, new Vector3(0f, transform.position.y, 0f));
 
             if (hareketDuzlemi.Raycast(isin, out float uzaklik))

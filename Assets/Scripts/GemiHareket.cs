@@ -60,6 +60,8 @@ public class GemiHareket : MonoBehaviour
                 return true;
             }
 
+
+
         }
 
         return false;
@@ -73,6 +75,8 @@ public class GemiHareket : MonoBehaviour
         {
             return;
         }
+
+
 
         Vector3 gidilecekKonumMesafe = hedefKonum - transform.position;
 
