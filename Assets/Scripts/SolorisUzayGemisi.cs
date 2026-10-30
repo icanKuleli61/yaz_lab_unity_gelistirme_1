@@ -22,7 +22,7 @@ public class SolorisUzayGemisi : Gemi
     }
 
 
-    public override void AtesEt()
+    public override void AtesEt(float hasar)
     {
 
     }

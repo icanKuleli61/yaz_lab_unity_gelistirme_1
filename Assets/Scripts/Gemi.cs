@@ -9,7 +9,7 @@ public abstract class Gemi
         this.gemiVerileri = gemiVerileri;
     }
 
-    public abstract void AtesEt();
+    public abstract void AtesEt(float hasar);
 
     public abstract void HasarAl(float hasar);
 

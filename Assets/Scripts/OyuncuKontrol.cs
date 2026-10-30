@@ -12,6 +12,13 @@ public class OyuncuKontrol : MonoBehaviour
     [SerializeField]
     private Camera camera;
 
+    [SerializeField]
+    private BossBilgiPaneli bossBilgiPaneli;
+
+    [SerializeField]
+    private OyuncuSaldiri oyuncuSaldiri;
+    private BossSecim seciliBoss;
+
     // Update is called once per frame
     void Update()
     {
@@ -49,5 +56,38 @@ public class OyuncuKontrol : MonoBehaviour
             }
         }
 
+        if (Mouse.current.leftButton.wasPressedThisFrame)
+        {
+            Vector2 tiklamaKonumu = Mouse.current.position.ReadValue();
+
+            Ray isin = camera.ScreenPointToRay(tiklamaKonumu);
+
+            if (Physics.Raycast(isin, out RaycastHit hit))
+            {
+                if (hit.collider.CompareTag("Boss"))
+                {
+                    BossSecim boss = hit.collider.GetComponentInParent<BossSecim>();
+
+                    if (boss != null)
+                    {
+                        HedefSec(boss);
+                    }
+                }
+            }
+        }
+
+    }
+
+    private void HedefSec(BossSecim yeniBoss)
+    {
+        if (seciliBoss != null)
+            seciliBoss.SecimKaldir();
+
+        seciliBoss = yeniBoss;
+
+        seciliBoss.SecimiGoster();
+        bossBilgiPaneli.PaneliGoster();
+        oyuncuSaldiri.HedefAta(seciliBoss);
+        Debug.Log(seciliBoss.name + " seçildi!");
     }
 }

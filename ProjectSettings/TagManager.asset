@@ -8,6 +8,7 @@ TagManager:
   - Gemi
   - PortalIkonu
   - PortalAtlamaAnimasyon
+  - Boss
   layers:
   - Default
   - TransparentFX
