@@ -9,7 +9,7 @@ public class Devolarium : Boss
             10f,   
             5f,    
             2f,    
-            50f   
+            200f   
         ))
     {
 

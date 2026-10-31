@@ -12,6 +12,10 @@ public class BossBilgiPaneli : MonoBehaviour
     [SerializeField] 
     private Boss boss;
 
+    private void Awake()
+    {
+        boss.CanSifirOldu += paneliKapat;
+    }
     private void OnEnable()
     {
         if (boss != null)
@@ -59,5 +63,12 @@ public class BossBilgiPaneli : MonoBehaviour
             boss.HasarAlindi += BilgileriGuncelle;
 
         BilgileriGuncelle();
+    }
+
+    private void paneliKapat()
+    {
+        gameObject.SetActive(false);
+
+        boss.CanSifirOldu -= paneliKapat;
     }
 }

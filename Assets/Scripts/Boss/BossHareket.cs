@@ -16,7 +16,7 @@ public class BossHareket : MonoBehaviour
 
     private float durmaMesafesi = 15f;
 
-    private float takipBirakmaMesafesi = 40f;
+    private float takipBirakmaMesafesi = 25f;
     private bool eveDonuyor;
     private Vector3 baslangicKonumu;
     private Quaternion baslangicRotasyonu;
@@ -27,7 +27,7 @@ public class BossHareket : MonoBehaviour
     private Boss boss;
 
     private bool saldiriyaUgradi;
-
+    public bool SaldiriyaUgradi => saldiriyaUgradi;
 
     private void Awake()
     {

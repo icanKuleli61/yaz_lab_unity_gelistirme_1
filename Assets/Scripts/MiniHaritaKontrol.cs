@@ -22,6 +22,20 @@ public class MiniHaritaKontrol : MonoBehaviour
     [SerializeField]
     private RectTransform kalkanKaldirmaPortaliIcon;
 
+    [SerializeField]
+    private Boss boss;
+
+    [SerializeField]
+    private RectTransform bossIkonu;
+
+    private bool bossOldu = false;
+
+    private void Awake()
+    {
+        if (boss != null)
+            boss.CanSifirOldu += bossIkonunuKapat;
+    }
+
     private void LateUpdate()
     {
         if (zemin == null || haritaArkaPlan == null)
@@ -41,6 +55,8 @@ public class MiniHaritaKontrol : MonoBehaviour
         OyuncuIkonunuGuncelle(minX, maxX, minZ, maxZ);
         PortalIkonunuGuncelle(minX, maxX, minZ, maxZ);
         KalkanKaldirmaPortaliIkonunuGuncelle(minX, maxX, minZ, maxZ);
+
+        BossIkonunuGuncelle(minX, maxX, minZ, maxZ);
     }
 
     private void OyuncuIkonunuGuncelle(
@@ -100,6 +116,30 @@ public class MiniHaritaKontrol : MonoBehaviour
         kalkanKaldirmaPortaliIcon.anchoredPosition =  KonumuHaritayaCevir( konum, minX, maxX, minZ, maxZ);
     }
 
+    private void BossIkonunuGuncelle(
+    float minX, float maxX, float minZ, float maxZ)
+    {
+        if (bossOldu || boss == null || bossIkonu == null)
+        {
+            bossIkonu.gameObject.SetActive(false);
+            return;
+        }
+
+        Vector3 konum = boss.transform.position;
+
+        bool iceride =
+            konum.x >= minX && konum.x <= maxX &&
+            konum.z >= minZ && konum.z <= maxZ;
+
+        bossIkonu.gameObject.SetActive(iceride);
+
+        if (!iceride)
+            return;
+
+        bossIkonu.anchoredPosition =
+            KonumuHaritayaCevir(konum, minX, maxX, minZ, maxZ);
+    }
+
     private Vector2 KonumuHaritayaCevir(
         Vector3 konum,
         float minX, float maxX,
@@ -112,5 +152,14 @@ public class MiniHaritaKontrol : MonoBehaviour
         float y = (zOran - 0.5f) * haritaArkaPlan.rect.height;
 
         return new Vector2(x, y);
+    }
+
+    private void bossIkonunuKapat()
+    {
+        bossOldu = true;
+
+        bossIkonu.gameObject.SetActive(false);
+
+        boss.CanSifirOldu -= bossIkonunuKapat;
     }
 }

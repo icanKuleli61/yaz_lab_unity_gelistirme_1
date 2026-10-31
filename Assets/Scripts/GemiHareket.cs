@@ -49,7 +49,6 @@ public class GemiHareket : MonoBehaviour
         if (saldiriHedefi == null || gemiUcu == null || gemiData == null)
             return;
 
-        // Gemiden boss'a doğru yön vektörü.
         Vector3 hedefYon = saldiriHedefi.position - transform.position;
         hedefYon.y = 0f;
 
@@ -120,14 +119,12 @@ public class GemiHareket : MonoBehaviour
         if (gemiUcu == null || gemiData == null)
             return;
 
-        // Fare hedefinin yönü.
         Vector3 hareketYonu = hedefKonum - transform.position;
         hareketYonu.y = 0f;
 
         if (hareketYonu.sqrMagnitude < 0.01f)
             return;
 
-        // Saldırı kapalıysa geminin burnunu fareye döndür.
         if (!saldiriAktif)
         {
             Vector3 mevcutBurunYonu = gemiUcu.forward;
@@ -144,7 +141,6 @@ public class GemiHareket : MonoBehaviour
                 gemiData.GetDonusHizi() * Time.deltaTime
             );
 
-            // Normal hareket: Geminin burnunun yönünde ilerle.
             hareketYonu = gemiUcu.forward;
             hareketYonu.y = 0f;
         }
@@ -152,10 +148,7 @@ public class GemiHareket : MonoBehaviour
         if (IsEngelVarmi())
             return;
 
-        // Saldırı açıkken de kapalıyken de hareket yönü fare hedefidir.
-        transform.position += hareketYonu.normalized *
-                              gemiData.GetGemiHizi() *
-                              Time.deltaTime;
+        transform.position += hareketYonu.normalized * gemiData.GetGemiHizi() *  Time.deltaTime;
     }
 
 

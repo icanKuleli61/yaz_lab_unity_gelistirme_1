@@ -3,6 +3,8 @@ using UnityEngine;
 public abstract class  Boss : MonoBehaviour
 {
     public event System.Action HasarAlindi;
+
+    public event System.Action CanSifirOldu;
     protected BossOzellikleri boss_ozellikleri;
 
     protected Boss(BossOzellikleri boss_ozellikleri) 
@@ -20,6 +22,10 @@ public abstract class  Boss : MonoBehaviour
         float yeniCan = boss_ozellikleri.getAnlik_boss_can() - hasar;
         yeniCan = Mathf.Max(0, yeniCan);
         boss_ozellikleri.setAnlik_boss_can(yeniCan);
+        if(yeniCan == 0)
+        {
+            CanSifirOldu?.Invoke();
+        }
         HasarAlindi?.Invoke();
     }
 }
