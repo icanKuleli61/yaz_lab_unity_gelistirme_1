@@ -4359,6 +4359,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: -6689036041284674117, guid: d834161f4fc336c4089575802d000c31, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2075320156}
+    - targetCorrespondingSourceObject: {fileID: -6689036041284674117, guid: d834161f4fc336c4089575802d000c31, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2075320157}
   m_SourcePrefab: {fileID: -5645937942226959685, guid: d834161f4fc336c4089575802d000c31, type: 3}
 --- !u!1 &1467383436 stripped
 GameObject:
@@ -4713,7 +4716,6 @@ GameObject:
   - component: {fileID: 1620806264}
   - component: {fileID: 1620806265}
   - component: {fileID: 1620806266}
-  - component: {fileID: 1620806267}
   m_Layer: 0
   m_Name: Oyuncu
   m_TagString: Untagged
@@ -4753,7 +4755,7 @@ MonoBehaviour:
   gemiHareket: {fileID: 2075320154}
   camera: {fileID: 330585545}
   bossBilgiPaneli: {fileID: 816496939}
-  oyuncuSaldiri: {fileID: 1620806267}
+  oyuncuSaldiri: {fileID: 2075320157}
 --- !u!54 &1620806263
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -4910,25 +4912,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &1620806267
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1620806260}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 05131afdda27a014a91b92208ad6a25d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::OyuncuSaldiri
-  lazerPrefab: {fileID: 4656721884455440945, guid: bf324ba43efc6ce4280f4d6b45b41b65, type: 3}
-  solLazerNoktasi: {fileID: 314482404}
-  sagLazerNoktasi: {fileID: 1266159654}
-  saldiriMesafesi: 200
-  atisAraligi: 0.5
-  lazerHizi: 40
-  hasar: 20
 --- !u!1 &1702964648
 GameObject:
   m_ObjectHideFlags: 0
@@ -5727,6 +5710,26 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &2075320157
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1467383436}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05131afdda27a014a91b92208ad6a25d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::OyuncuSaldiri
+  lazerPrefab: {fileID: 4656721884455440945, guid: bf324ba43efc6ce4280f4d6b45b41b65, type: 3}
+  solLazerNoktasi: {fileID: 314482404}
+  sagLazerNoktasi: {fileID: 1266159654}
+  saldiriMesafesi: 20
+  atisAraligi: 0.5
+  lazerHizi: 40
+  gemiHareket: {fileID: 2075320154}
+  gemiYonetici: {fileID: 1620806264}
 --- !u!1 &2087931078
 GameObject:
   m_ObjectHideFlags: 0
@@ -5898,16 +5901,7 @@ PrefabInstance:
       addedObject: {fileID: 2112218112}
     - targetCorrespondingSourceObject: {fileID: -8098169881513260187, guid: fe31e62424e44a144a8b9337119454e0, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 2112218116}
-    - targetCorrespondingSourceObject: {fileID: -8098169881513260187, guid: fe31e62424e44a144a8b9337119454e0, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 2112218117}
-    - targetCorrespondingSourceObject: {fileID: -8098169881513260187, guid: fe31e62424e44a144a8b9337119454e0, type: 3}
-      insertIndex: -1
       addedObject: {fileID: 2112218121}
-    - targetCorrespondingSourceObject: {fileID: -8098169881513260187, guid: fe31e62424e44a144a8b9337119454e0, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 2112218120}
   m_SourcePrefab: {fileID: 3150474306388093854, guid: fe31e62424e44a144a8b9337119454e0, type: 3}
 --- !u!1 &2112218105 stripped
 GameObject:
@@ -5972,61 +5966,6 @@ MonoBehaviour:
   destinationUpdateInterval: 0.2
   takipYanMesafesi: 6
   takipArkaMesafesi: 2
---- !u!4 &2112218115 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 3447742079981357586, guid: fe31e62424e44a144a8b9337119454e0, type: 3}
-  m_PrefabInstance: {fileID: 2112218104}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &2112218116
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2112218105}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cd457c9df8f537c448821f5e1a1da1ce, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BotYardimMesajiKontrol
-  bot: {fileID: 2112218115}
-  gemi: {fileID: 2075320153}
-  mesaj: {fileID: 0}
-  oyunKamerasi: {fileID: 330585545}
-  salterKontrol: {fileID: 0}
-  gorunmeMesafesi: 8
-  botUstuOfset: {x: 0, y: 3.1, z: 0}
---- !u!114 &2112218117
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2112218105}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 70d0d479da4975f4b86081f05da88623, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BotYardimPanelKontrol
-  yardimPaneli: {fileID: 0}
-  evetButonu: {fileID: 0}
-  hayirButonu: {fileID: 0}
-  companionMission: {fileID: 2112218112}
---- !u!114 &2112218120
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2112218105}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 161ebcade02ac7846a31300330edac23, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BotTiklamaKontrol
-  yardimPanelKontrol: {fileID: 2112218117}
-  oyunKamerasi: {fileID: 330585545}
-  salterKontrol: {fileID: 0}
 --- !u!65 &2112218121
 BoxCollider:
   m_ObjectHideFlags: 0

@@ -65,7 +65,6 @@ public class CompanionMission : MonoBehaviour
 
         if (shipTransform == null || switchTransform == null)
         {
-            Debug.LogError("Companion: Gemi veya Salter atanmamis!");
             enabled = false;
             return;
         }

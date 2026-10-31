@@ -16,7 +16,7 @@ public class GemiYonetici : MonoBehaviour
 
 
 
-    void Start()
+    private void Awake()
     {
         aktifGemi = SolorisUzayGemisi.GemiInitilaze();
         _gemiHareket.GemiAta(aktifGemi);

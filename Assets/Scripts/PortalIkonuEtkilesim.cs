@@ -22,6 +22,10 @@ public class PortalIkonuEtkilesim : MonoBehaviour
 
     private Coroutine animasyonCoroutine;
 
+    private bool basiliTutuluyor;
+    private float baslamaZamani;
+    private bool bolumDegisti;
+
     private bool efektCalisiyor = false;
     private void Awake()
     {
@@ -29,18 +33,29 @@ public class PortalIkonuEtkilesim : MonoBehaviour
         normalOlcekYildiz = yildiz.transform.localScale;
     }
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private void Update()
     {
-        
+        if (!basiliTutuluyor || bolumDegisti)
+            return;
+
+        if (Time.time - baslamaZamani >= 3f)
+        {
+            bolumDegisti = true;
+
+            UnityEngine.SceneManagement.SceneManager.LoadScene("Bolum2");
+        }
     }
     private void OnMouseDown()
     {
+        basiliTutuluyor = true;
+        baslamaZamani = Time.time;
+
         portalAnimasyonKontrol.animasyonEtkin();
     }
 
     private void OnMouseUp()
     {
+        basiliTutuluyor = false;
         portalAnimasyonKontrol.animasyonEtkinDeğil();
     }
 
@@ -52,8 +67,10 @@ public class PortalIkonuEtkilesim : MonoBehaviour
 
     private void OnMouseExit()
     {
+
         MouseCercevedenGitti();
-        
+
+
     }
 
     private void MouseCerceveyeGeldi()

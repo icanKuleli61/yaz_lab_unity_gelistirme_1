@@ -28,10 +28,19 @@ public class BossHareket : MonoBehaviour
 
     private bool saldiriyaUgradi;
 
+
     private void Awake()
     {
-        boss = new Devolarium();
-        boss.HasarAlindi += HasarAlindiginda;
+        boss = GetComponent<Devolarium>();
+
+        if (boss != null)
+        {
+            boss.HasarAlindi += HasarAlindiginda;
+        }
+        else
+        {
+            Debug.LogError("Devolarium component bulunamadı!");
+        }
     }
 
     private void Start()
@@ -190,5 +199,10 @@ public class BossHareket : MonoBehaviour
     {
         if (boss != null)
             boss.HasarAlindi -= HasarAlindiginda;
+    }
+
+    public Boss GetBoss()
+    {
+        return boss;
     }
 }

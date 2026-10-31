@@ -13,6 +13,9 @@ public class GemiHareket : MonoBehaviour
     [SerializeField]
     private SphereCollider enerjiKalkaniCollider;
 
+    private bool saldiriAktif;
+    private Transform saldiriHedefi;
+
 
     private bool kalkanaDegiyorMu = false;
 
@@ -35,9 +38,44 @@ public class GemiHareket : MonoBehaviour
 
     void Update()
     {
-        
+        if (saldiriAktif)
+        {
+            SaldiriRotasyonu();
+        }
     }
 
+    public void SaldiriRotasyonu()
+    {
+        if (saldiriHedefi == null || gemiUcu == null || gemiData == null)
+            return;
+
+        // Gemiden boss'a doğru yön vektörü.
+        Vector3 hedefYon = saldiriHedefi.position - transform.position;
+        hedefYon.y = 0f;
+
+        if (hedefYon.sqrMagnitude < 0.001f)
+            return;
+
+        Vector3 mevcutBurunYonu = gemiUcu.forward;
+        mevcutBurunYonu.y = 0f;
+
+        Quaternion hedefRotasyon = Quaternion.FromToRotation(
+            mevcutBurunYonu,
+            hedefYon.normalized
+        ) * transform.rotation;
+
+        transform.rotation = Quaternion.RotateTowards(
+            transform.rotation,
+            hedefRotasyon,
+            gemiData.GetDonusHizi() * Time.deltaTime
+        );
+    }
+
+    public void SaldiriDurumuAyarla(bool aktif, Transform hedef = null)
+    {
+        saldiriAktif = aktif;
+        saldiriHedefi = aktif ? hedef : null;
+    }
     private bool IsEngelVarmi()
     {
 
@@ -82,39 +120,44 @@ public class GemiHareket : MonoBehaviour
         if (gemiUcu == null || gemiData == null)
             return;
 
+        // Fare hedefinin yönü.
+        Vector3 hareketYonu = hedefKonum - transform.position;
+        hareketYonu.y = 0f;
 
-
-        Vector3 gidilecekKonumMesafe = hedefKonum - transform.position;
-
-        gidilecekKonumMesafe.y = 0f;
-
-        if (gidilecekKonumMesafe.sqrMagnitude < 0.01f)
+        if (hareketYonu.sqrMagnitude < 0.01f)
             return;
 
-        Vector3 mevcutBurunYonu = gemiUcu.forward;
-
-        mevcutBurunYonu.y = 0f;
-
-        Quaternion hedefRotasyon = Quaternion.FromToRotation(
-            mevcutBurunYonu,
-            gidilecekKonumMesafe
-        ) * transform.rotation;
-
-        transform.rotation = Quaternion.RotateTowards(
-            transform.rotation,
-            hedefRotasyon,
-            gemiData.GetDonusHizi() * Time.deltaTime
-        );
-
-        if (IsEngelVarmi())
+        // Saldırı kapalıysa geminin burnunu fareye döndür.
+        if (!saldiriAktif)
         {
-            return;
+            Vector3 mevcutBurunYonu = gemiUcu.forward;
+            mevcutBurunYonu.y = 0f;
+
+            Quaternion hedefRotasyon = Quaternion.FromToRotation(
+                mevcutBurunYonu,
+                hareketYonu
+            ) * transform.rotation;
+
+            transform.rotation = Quaternion.RotateTowards(
+                transform.rotation,
+                hedefRotasyon,
+                gemiData.GetDonusHizi() * Time.deltaTime
+            );
+
+            // Normal hareket: Geminin burnunun yönünde ilerle.
+            hareketYonu = gemiUcu.forward;
+            hareketYonu.y = 0f;
         }
 
-        transform.position += gemiUcu.forward
-                    * gemiData.GetGemiHizi()
-                    * Time.deltaTime;
+        if (IsEngelVarmi())
+            return;
+
+        // Saldırı açıkken de kapalıyken de hareket yönü fare hedefidir.
+        transform.position += hareketYonu.normalized *
+                              gemiData.GetGemiHizi() *
+                              Time.deltaTime;
     }
+
 
 
     private void OnTriggerEnter(Collider other)

@@ -47,4 +47,17 @@ public class BossBilgiPaneli : MonoBehaviour
             ? mevcutCan / maksimumCan
             : 0;
     }
+
+    public void BossAta(Boss yeniBoss)
+    {
+        if (boss != null)
+            boss.HasarAlindi -= BilgileriGuncelle;
+
+        boss = yeniBoss;
+
+        if (boss != null)
+            boss.HasarAlindi += BilgileriGuncelle;
+
+        BilgileriGuncelle();
+    }
 }

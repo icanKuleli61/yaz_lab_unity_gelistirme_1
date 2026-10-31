@@ -10,11 +10,18 @@ public class OyuncuSaldiri : MonoBehaviour
     [SerializeField] private Transform solLazerNoktasi;
     [SerializeField] private Transform sagLazerNoktasi;
 
+
+
     [Header("Saldiri Ayarlari")]
-    [SerializeField] private float saldiriMesafesi = 200f;
+    [SerializeField] private float saldiriMesafesi = 20f;
     [SerializeField] private float atisAraligi = 2f;
     [SerializeField] private float lazerHizi = 40f;
-    [SerializeField] private float hasar = 20f;
+
+    [SerializeField] private GemiHareket gemiHareket;
+
+    [SerializeField] private GemiYonetici gemiYonetici;
+
+    private GemiData gemiData;
 
     private BossSecim seciliBoss;
     private BossHareket bossHareket;
@@ -22,7 +29,10 @@ public class OyuncuSaldiri : MonoBehaviour
     private bool saldiriAktif;
     private float sonrakiAtisZamani;
     private float sonrakiMesafeLogZamani;
-
+    private void Start()
+    {
+        gemiData = gemiYonetici.GetAktifGemiyi().getGemiVerileri();
+    }
     public void HedefAta(BossSecim yeniBoss)
     {
         seciliBoss = yeniBoss;
@@ -32,6 +42,7 @@ public class OyuncuSaldiri : MonoBehaviour
             : null;
 
         saldiriAktif = false;
+        gemiHareket.SaldiriDurumuAyarla(false);
 
         Debug.Log("Hedef: " +
             (seciliBoss != null ? seciliBoss.name : "Yok"));
@@ -45,7 +56,7 @@ public class OyuncuSaldiri : MonoBehaviour
         if (Keyboard.current == null)
             return;
 
-        // CTRL ile saldiriyi ac/kapat
+        // CTRL ile saldiriyi ac / kapat
         if (Keyboard.current.leftCtrlKey.wasPressedThisFrame)
         {
             if (!saldiriAktif)
@@ -67,11 +78,18 @@ public class OyuncuSaldiri : MonoBehaviour
                 saldiriAktif = true;
                 sonrakiAtisZamani = 0f;
 
+                gemiHareket.SaldiriDurumuAyarla(
+                    true,
+                    seciliBoss.transform
+                );
+
                 Debug.Log("Saldiri baslatildi.");
             }
             else
             {
                 saldiriAktif = false;
+                gemiHareket.SaldiriDurumuAyarla(false);
+
                 Debug.Log("Saldiri durduruldu.");
             }
         }
@@ -82,16 +100,20 @@ public class OyuncuSaldiri : MonoBehaviour
         if (seciliBoss == null || bossHareket == null)
         {
             saldiriAktif = false;
+            gemiHareket.SaldiriDurumuAyarla(false);
             return;
         }
 
-        // Oyuncu ile boss arasindaki mesafe
+        // Saldiri boyunca geminin burnunu boss'a cevir.
+
+
+        // Oyuncu ile boss arasindaki mesafe.
         float mesafe = Vector3.Distance(
             transform.position,
             seciliBoss.transform.position
         );
 
-        // Menzil disindaysa ates etme
+        // Menzil disindaysa ates etme.
         if (mesafe > saldiriMesafesi)
         {
             if (Time.time >= sonrakiMesafeLogZamani)
@@ -105,7 +127,7 @@ public class OyuncuSaldiri : MonoBehaviour
             return;
         }
 
-        // Atis zamani geldiyse iki lazeri de olustur
+        // Atis zamani geldiyse iki lazeri olustur.
         if (Time.time >= sonrakiAtisZamani)
         {
             LazerAt(solLazerNoktasi);
@@ -114,7 +136,6 @@ public class OyuncuSaldiri : MonoBehaviour
             sonrakiAtisZamani = Time.time + atisAraligi;
         }
     }
-
     private void LazerAt(Transform cikisNoktasi)
     {
         if (seciliBoss == null || lazerPrefab == null)
@@ -172,8 +193,11 @@ public class OyuncuSaldiri : MonoBehaviour
             {
                 if (hedefBossHareket != null)
                 {
-                    hedefBossHareket.HasarAl(hasar);
-                    Debug.Log("Boss hasar aldi: " + hasar);
+                    float oyuncuHasari = gemiData.GetHasar();
+
+                    hedefBossHareket.HasarAl(oyuncuHasari);
+
+                    Debug.Log("Boss hasar aldi: " + oyuncuHasari);
                 }
 
                 Destroy(lazer);

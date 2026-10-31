@@ -87,6 +87,14 @@ public class OyuncuKontrol : MonoBehaviour
 
         seciliBoss.SecimiGoster();
         bossBilgiPaneli.PaneliGoster();
+
+        BossHareket bossHareket =
+    seciliBoss.GetComponentInParent<BossHareket>();
+
+        if (bossHareket != null)
+        {
+            bossBilgiPaneli.BossAta(bossHareket.GetBoss());
+        }
         oyuncuSaldiri.HedefAta(seciliBoss);
         Debug.Log(seciliBoss.name + " seçildi!");
     }
