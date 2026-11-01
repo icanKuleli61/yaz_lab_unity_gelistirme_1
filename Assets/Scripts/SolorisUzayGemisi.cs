@@ -13,7 +13,7 @@ public class SolorisUzayGemisi : Gemi
     public static SolorisUzayGemisi GemiInitilaze()
     {
         if(solorisGemi == null)
-        {   GemiData gemiVerisi = new GemiData(GemiTuru.Soloris,15f,210f,900f,900f,500,100);
+        {   GemiData gemiVerisi = new GemiData(GemiTuru.Soloris,15f,210f,900f,900f,30,100);
             solorisGemi = new SolorisUzayGemisi(gemiVerisi);
         }
         solorisGemiData = solorisGemi.getGemiVerileri();

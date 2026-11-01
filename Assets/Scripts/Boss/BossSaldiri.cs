@@ -3,16 +3,24 @@ using System.Collections;
 using System.Collections.Generic;
 public class BossSaldiri : MonoBehaviour
 {
-    [SerializeField] private GameObject lazerPrefab;
-    [SerializeField] private Transform sagLazer;
-    [SerializeField] private Transform solLazer;
+    [SerializeField] 
+    private GameObject lazerPrefab;
+    [SerializeField] 
+    private Transform sagLazer;
+    [SerializeField] 
+    private Transform solLazer;
 
-    [SerializeField] private float saldiriMesafesi = 30f;
-    [SerializeField] private float atisAraligi = 2f;
-    [SerializeField] private float lazerHizi = 40f;
+    [SerializeField] 
+    private float saldiriMesafesi = 30f;
+    [SerializeField] 
+    private float atisAraligi = 2f;
+    [SerializeField] 
+    private float lazerHizi = 40f;
 
-    [SerializeField] private Transform oyuncu;
-    [SerializeField] private GemiYonetici gemiYonetici;
+    [SerializeField] 
+    private Transform oyuncu;
+    [SerializeField] 
+    private GemiYonetici gemiYonetici;
 
     private List<GameObject> aktifLazerler = new List<GameObject>();
 

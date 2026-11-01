@@ -21,8 +21,6 @@ public class BossHareket : MonoBehaviour
     private Vector3 baslangicKonumu;
     private Quaternion baslangicRotasyonu;
 
-    [Header("Test")]
-    [SerializeField] private float testHasari = 50f;
 
     private Boss boss;
 
@@ -39,7 +37,6 @@ public class BossHareket : MonoBehaviour
         }
         else
         {
-            Debug.LogError("Devolarium component bulunamadı!");
         }
     }
 
@@ -57,10 +54,11 @@ public class BossHareket : MonoBehaviour
 
     private void Update()
     {
-        if (Keyboard.current != null &&
-            Keyboard.current.hKey.wasPressedThisFrame)
+
+        if (oyuncu == null || bosPoint == null)
         {
-            HasarAl(testHasari);
+            enabled = false;
+            return;
         }
 
         if (eveDonuyor)
@@ -186,8 +184,6 @@ public class BossHareket : MonoBehaviour
     private void HasarAlindiginda()
     {
         saldiriyaUgradi = true;
-
-        Debug.Log("Devolarium aktif oldu!");
     }
 
     public void HasarAl(float hasar)

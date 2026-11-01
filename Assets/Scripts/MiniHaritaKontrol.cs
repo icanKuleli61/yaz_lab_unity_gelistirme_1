@@ -28,12 +28,50 @@ public class MiniHaritaKontrol : MonoBehaviour
     [SerializeField]
     private RectTransform bossIkonu;
 
+    [SerializeField]
+    private GameObject npc;
+
+    [SerializeField]
+    private RectTransform npcİkonu;
+
     private bool bossOldu = false;
 
     private void Awake()
     {
         if (boss != null)
             boss.CanSifirOldu += bossIkonunuKapat;
+    }
+
+
+    private void Start()
+    {
+        if (npc == null || npcİkonu == null)
+            return;
+
+        Vector3 konum = npc.transform.position;
+
+        Vector3 merkez = zemin.position;
+        Vector3 boyut = zemin.lossyScale;
+
+        float yariX = 5f * boyut.x;
+        float yariZ = 5f * boyut.z;
+
+        float minX = merkez.x - yariX;
+        float maxX = merkez.x + yariX;
+        float minZ = merkez.z - yariZ;
+        float maxZ = merkez.z + yariZ;
+
+        bool iceride =
+            konum.x >= minX && konum.x <= maxX &&
+            konum.z >= minZ && konum.z <= maxZ;
+
+        npcİkonu.gameObject.SetActive(iceride);
+
+        if (iceride)
+        {
+            npcİkonu.anchoredPosition =
+                KonumuHaritayaCevir(konum, minX, maxX, minZ, maxZ);
+        }
     }
 
     private void LateUpdate()
@@ -121,7 +159,6 @@ public class MiniHaritaKontrol : MonoBehaviour
     {
         if (bossOldu || boss == null || bossIkonu == null)
         {
-            bossIkonu.gameObject.SetActive(false);
             return;
         }
 

@@ -38,6 +38,15 @@ public  class GemiData
 
     public float GetTamirCani() { return _tamirCani; }
 
+    public void SetCan(float can) {
+        _maxsimumCan = can;
+        _anlikcan = can;
+    }
+
+    public void SetHasar(float hasar) {
+        _hasar = hasar;
+    }
+
 
     public void HasarUygulama(float hasarAl)
     {

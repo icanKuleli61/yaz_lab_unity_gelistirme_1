@@ -12,6 +12,11 @@ public class PortalIkonuEtkilesim : MonoBehaviour
     [SerializeField]
     private PortalAnimasyonKontrol portalAnimasyonKontrol;
 
+    [SerializeField]
+    private AudioSource ses_kaynagi;
+
+    [SerializeField]
+    private AudioClip calınacak_ses;
     private float buyumeKatsayisi = 1.15f;
 
     private float donusHizi = 45f;
@@ -38,7 +43,7 @@ public class PortalIkonuEtkilesim : MonoBehaviour
         if (!basiliTutuluyor || bolumDegisti)
             return;
 
-        if (Time.time - baslamaZamani >= 3f)
+        if (Time.time - baslamaZamani >= 6f)
         {
             bolumDegisti = true;
 
@@ -49,14 +54,22 @@ public class PortalIkonuEtkilesim : MonoBehaviour
     {
         basiliTutuluyor = true;
         baslamaZamani = Time.time;
-
         portalAnimasyonKontrol.animasyonEtkin();
+        if (ses_kaynagi != null && calınacak_ses != null)
+        {
+            ses_kaynagi.clip = calınacak_ses;
+            ses_kaynagi.Play();
+        }
     }
 
     private void OnMouseUp()
     {
         basiliTutuluyor = false;
         portalAnimasyonKontrol.animasyonEtkinDeğil();
+        if (ses_kaynagi != null)
+        {
+            ses_kaynagi.Stop();
+        }
     }
 
     private void OnMouseEnter()
