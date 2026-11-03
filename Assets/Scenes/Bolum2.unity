@@ -8246,6 +8246,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: -8098169881513260187, guid: 5df076eb34de9dc48a98a4d178df8a98, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1866942503}
+    - targetCorrespondingSourceObject: {fileID: -8098169881513260187, guid: 5df076eb34de9dc48a98a4d178df8a98, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1866942509}
   m_SourcePrefab: {fileID: 3150474306388093854, guid: 5df076eb34de9dc48a98a4d178df8a98, type: 3}
 --- !u!1 &1866942498 stripped
 GameObject:
@@ -8269,6 +8272,9 @@ MonoBehaviour:
   npcCevapMetni: {fileID: 787025857}
   ollamaURL: http://localhost:11434/api/chat
   model: qwen2.5:3b
+  zamanAsimiSaniye: 60
+  maksimumGecmisMesajSayisi: 12
+  eylemYoneticisi: {fileID: 1866942509}
 --- !u!136 &1866942503
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -8297,6 +8303,20 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3447742079981357586, guid: 5df076eb34de9dc48a98a4d178df8a98, type: 3}
   m_PrefabInstance: {fileID: 1866942497}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1866942509
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1866942498}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6ff03ebf45402fd418dfa88b77841e80, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NPCEylemYoneticisi
+  gemiYonetici: {fileID: 1620806264}
+  oyunYonetici: {fileID: 1834030939}
 --- !u!1 &1921216722
 GameObject:
   m_ObjectHideFlags: 0

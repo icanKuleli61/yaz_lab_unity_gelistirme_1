@@ -22,6 +22,8 @@ public class OyunYonetici : MonoBehaviour
 
     private bool _oyunBittiMi = false;
 
+    public bool OyunBittiMi => _oyunBittiMi;
+
     public void GemiPatladi()
     {
         Debug.Log("TEST: GemiPatladi metodu calisti!");
@@ -61,7 +63,9 @@ public class OyunYonetici : MonoBehaviour
 
         Destroy(aktifGemiTransformu.gameObject);
 
-        Debug.Log("TEST: Basarisizlik paneli icin 3 saniye bekleniyor.");
+        Debug.Log(
+            "TEST: Basarisizlik paneli icin 3 saniye bekleniyor."
+        );
 
         StartCoroutine(GorevBasarisizPaneliniAc());
     }
@@ -78,6 +82,7 @@ public class OyunYonetici : MonoBehaviour
                 "HATA: Gorev Basarisiz Panel alani bos! " +
                 "Inspector'dan GorevBasarisizPaneli nesnesini bagla."
             );
+
             yield break;
         }
 
