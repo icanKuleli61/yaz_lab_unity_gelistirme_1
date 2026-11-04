@@ -1,4 +1,3 @@
-
 using UnityEngine;
 
 public class SalterKontrol : MonoBehaviour
@@ -21,49 +20,29 @@ public class SalterKontrol : MonoBehaviour
     {
         if (aktifMi)
         {
-            Debug.Log("Salter zaten aktif!");
             return;
         }
 
         aktifMi = true;
 
-        // Salterin rengini degistir.
         if (salterRenderer != null)
         {
             salterRenderer.material.color = aktifRengi;
         }
-        else
-        {
-            Debug.LogWarning("Salter Renderer atanmamis!");
-        }
 
-        // Portal kalkanini koyu yesile cevir.
         if (EnerjiKalkani != null)
         {
             EnerjiKalkani.SetActive(false);
         }
-        else
-        {
-            Debug.LogWarning("Portal kalkan Renderer atanmamis!");
-        }
 
-        // Portalin colliderini kapat.
         if (portalCollider != null)
         {
             portalCollider.enabled = false;
-            Debug.Log("Portal Collider kapatildi!");
-        }
-        else
-        {
-            Debug.LogWarning("Portal Collider atanmamis!");
         }
 
-        // Portal bilgi panelini gizle.
         if (portalBilgiPaneli != null)
         {
             portalBilgiPaneli.SetActive(false);
         }
-
-        Debug.Log("SALTER AKTIF EDILDI!");
     }
 }

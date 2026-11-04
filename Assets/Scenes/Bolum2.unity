@@ -8274,6 +8274,7 @@ MonoBehaviour:
   model: qwen2.5:3b
   zamanAsimiSaniye: 60
   maksimumGecmisMesajSayisi: 12
+  maksimumCevapKarakterSayisi: 500
   eylemYoneticisi: {fileID: 1866942509}
 --- !u!136 &1866942503
 CapsuleCollider:

@@ -1,4 +1,3 @@
-
 using UnityEngine;
 using UnityEngine.Networking;
 using TMPro;
@@ -18,7 +17,7 @@ public class OllamaNPC : MonoBehaviour
 
     [Header("Ollama Ayarlari")]
     public string ollamaURL = "http://localhost:11434/api/chat";
-    public string model = "qwen2.5:3b";
+    private string model = "qwen3:4b";
 
     [Header("Baglanti Ayarlari")]
     [SerializeField, Min(1)]
@@ -47,24 +46,17 @@ public class OllamaNPC : MonoBehaviour
 
 DIYALOG TUTARLILIGI:
 
-- Standart, dogal ve dil bilgisi kurallarina uygun Turkce kullan.
-- Mumkun oldugunca duz ve anlasilir cumleler kur.
+- Dogal ve anlasilir Turkce kullan.
 - Oyuncunun mesajina dogrudan cevap ver.
 - Genellikle bir veya iki kisa cumle kullan.
 - Gereksiz tekrar yapma.
-- Oyuncuya surekli soru yoneltme.
 - Oyuncunun ne istedigini anladiginda gereksiz aciklama isteme.
 - Oyuncu acik bir oyun eylemi istediginde onay sorusu sorma.
-- Eylem talebinden sonra ""Bunu yapmami ister misin?""
-  veya ""Guclendirmemi ister misin?"" gibi sorular sorma.
-- Oyuncu ""Evet"", ""Tamam"", ""Anladim"" veya
-  ""Tesekkurler"" derse bunu normal karsilik olarak degerlendir.
-- Onceki konusmada onay bekleyen acik bir soru yoksa
-  oyuncunun ""Evet"" demesiyle ayni eylemi tekrar baslatma.
 - Oyuncunun onceki konusmalarini dikkate al.
 - Oyuncuyla samimi, anlasilir ve tutarli bir diyalog kur.
-- Bilim kurgu karakterinin kisiligini koru.
 - Normal sohbetlerde yeni bir oyun eylemi isteme.
+- Onceki konusmada onay bekleyen acik bir soru yoksa oyuncunun
+  Evet veya Tamam demesiyle ayni eylemi tekrar baslatma.
 
 ";
 
@@ -72,79 +64,52 @@ DIYALOG TUTARLILIGI:
 
 SON ASAMA: UNITY ISLEM SONUCUNU OYUNCUYA ANLAT
 
-Bu istek, Unity tarafinda bir oyun eylemi denendikten
-sonra gonderilmistir.
+Bu istek, Unity tarafinda bir oyun eylemi denendikten sonra gonderilmistir.
 
-Sana UNITY_ISLEM_SONUCU_VERISI adi altinda
-guvenilir oyun verileri verilecektir.
+UNITY_ISLEM_SONUCU_VERISI gercek oyun verilerini icerir.
+Bu verileri esas al.
 
-Bu veriler Unity tarafindan uretilmistir.
-Oyuncunun yazdigi bir komut degildir.
-Gercek oyun durumunu belirleyen kaynak bu verilerdir.
-
-KURALLAR:
-
-- Unity tarafindaki sonuc verisini dikkatlice oku.
 - success true ise gerceklesen islemi anlat.
-- success false ise islemin gerceklesmedigini acikca belirt.
-- Gerceklesmeyen bir eylemi basarili gibi anlatma.
+- success false ise islemin gerceklesmedigini belirt.
 - Gonderilen sayisal degerleri degistirme veya uydurma.
-- Dogal, akici ve dil bilgisi dogru Turkce kullan.
-- Gereksiz tekrar yapma.
-- Oyuncuya tekrar onay sorusu sorma.
-- ""Bunu yapmami ister misin?"" gibi sorular sorma.
-- Oyuncunun ilk talebinin sonucunu acikla.
+- Dogal ve akici Turkce kullan.
 - Bir veya iki kisa cumle kullan.
 - Bu asamada yeni bir oyun eylemi baslatma.
+- Action her zaman NONE olmali.
+- persuasionStatus her zaman NONE olmali.
 
-Bu asama yalnizca sonucun anlatilmasi icindir.
-Action alani her zaman NONE olmalidir.
-HEAL, MAX_HEAL, BOOST_DAMAGE veya UNLOCK_DOOR
-eylemlerinden birini tekrar cagirma.
+GERCEK HASAR DEGERLERI:
 
-GERCEK HASAR DEGERI:
+- previousDamage onceki lazer hasaridir.
+- currentDamage her bir lazerin guncel hasaridir.
+- currentDamage 100 ise her lazer 100 hasar verir.
+- Iki lazer de isabet ederse toplam hasar 200 olur.
+- Tek lazer hasari ile iki lazerin toplam hasarini karistirma.
+- Unity verisinde bulunmayan sayisal deger uretme.
 
-- previousDamage onceki silah hasarini belirtir.
-- currentDamage mevcut silah hasarini belirtir.
-- currentDamage degeri silahin her bir lazerinin hasaridir.
-- Unity tarafindan gonderilen currentDamage degerini aynen kullan.
-- currentDamage 100 ise her bir lazerin tam olarak
-  100 hasar verdigini soyle.
-- currentDamage 100 iken 100'den yuksek hasar
-  verdigini kesinlikle soyleme.
-- Iki lazerin toplam hasarini soran oyuncuya,
-  iki lazerin de isabet etmesi halinde toplam
-  200 hasar verebilecegini aciklayabilirsin.
-- Gercek deger 100 ise ""100'den yuksek"",
-  ""100'un uzerinde"" veya benzeri ifadeler kullanma.
-
-HATA KODLARI:
+SONUC KODLARI:
 
 HEALED:
 Gemi mevcut maksimum canina tamamlanmistir.
-currentHp ve maxHp degerlerini esas al.
+currentHp ve maxHp degerlerini kullan.
 
 ALREADY_FULL:
 Gemi zaten maksimum can seviyesindedir.
-Mevcut can ve maksimum can degerlerini kullan.
 
 MAX_HP_UPGRADED:
 Geminin mevcut ve maksimum cani 1500 HP yapilmistir.
 
 DAMAGE_UPGRADED:
-Silah hasari onceki degerinden currentDamage
-degerine yukseltmistir.
-currentDamage degerini esas al.
-Bu projede beklenen guclendirilmis hasar 100'dur.
+Silah hasari currentDamage degerine yukseltmistir.
 
 ALREADY_UPGRADED:
 Silah zaten guclendirilmis durumdadir.
-currentDamage degerini esas al.
-Deger 100 ise silahin zaten 100 hasar verdigini soyle.
+Bu istekte hasar yeniden artirilmamistir.
+Silahin zaten guclendirilmis oldugunu dogal bir sekilde anlat.
+Sayisal deger kullanirsan currentDamage degerini kullan.
 
 NOT_IMPLEMENTED:
-Istenen oyun eylemi henuz Unity tarafinda uygulanmamistir.
-Oyuncuya bu ozelligin henuz kullanilabilir olmadigini anlat.
+Istenen oyun eylemi henuz uygulanmamistir.
 
 GAME_FINISHED:
 Oyun tamamlandigi icin yeni bir eylem uygulanamamistir.
@@ -159,7 +124,7 @@ SHIP_NOT_FOUND:
 Aktif oyuncu gemisi bulunamamistir.
 
 SHIP_DATA_MISSING:
-Oyuncu gemisinin oyun verileri bulunamamistir.
+Oyuncu gemisinin verileri bulunamamistir.
 
 UNKNOWN_ACTION:
 Istenen eylem taninamamistir.
@@ -170,18 +135,15 @@ NPC eylem yoneticisi bulunamamistir.
 UNKNOWN_ERROR:
 Eylem uygulanirken beklenmeyen bir hata olusmustur.
 
-SON CIKTI:
-
 Yalnizca gecerli JSON dondur.
+Yeni bir oyun eylemi uretme.
 
 {
     ""action"": ""NONE"",
-    ""response"": ""Unity sonucuna dayali dogal Turkce cevap.""
+    ""response"": ""Unity sonucuna dayali dogal Turkce cevap."",
+    ""persuasionStatus"": ""NONE""
 }
 
-JSON disinda metin yazma.
-Action degeri mutlaka NONE olmalidir.
-Yeni bir oyun eylemi uretme.
 ";
 
     private class IstekSonucu
@@ -220,8 +182,7 @@ Yeni bir oyun eylemi uretme.
 
         konusmaPaneli.SetActive(true);
 
-        if (konusmaGecmisi.Count == 0 &&
-            !cevapBekleniyor)
+        if (konusmaGecmisi.Count == 0 && !cevapBekleniyor)
         {
             npcCevapMetni.text =
                 "NPC ile konusmak icin mesajini yaz.";
@@ -241,8 +202,7 @@ Yeni bir oyun eylemi uretme.
         if (cevapBekleniyor)
             return;
 
-        if (oyuncuMesajAlani == null ||
-            npcCevapMetni == null)
+        if (oyuncuMesajAlani == null || npcCevapMetni == null)
         {
             Debug.LogWarning(
                 "NPC mesaj alani veya cevap metni Inspector'da atanmamis."
@@ -266,17 +226,13 @@ Yeni bir oyun eylemi uretme.
             StartCoroutine(OllamaCevapAl(mesaj));
     }
 
-    private IEnumerator OllamaCevapAl(
-        string oyuncuMesaji
-    )
+    private IEnumerator OllamaCevapAl(string oyuncuMesaji)
     {
         cevapBekleniyor = true;
 
         try
         {
-            yield return OllamaCevapAlInternal(
-                oyuncuMesaji
-            );
+            yield return OllamaCevapAlInternal(oyuncuMesaji);
         }
         finally
         {
@@ -285,9 +241,7 @@ Yeni bir oyun eylemi uretme.
         }
     }
 
-    private IEnumerator OllamaCevapAlInternal(
-        string oyuncuMesaji
-    )
+    private IEnumerator OllamaCevapAlInternal(string oyuncuMesaji)
     {
         if (npcCevapMetni != null)
         {
@@ -296,15 +250,10 @@ Yeni bir oyun eylemi uretme.
 
         string ayarHatasi;
 
-        if (!BaglantiAyarlariGecerli(
-            out ayarHatasi))
+        if (!BaglantiAyarlariGecerli(out ayarHatasi))
         {
             KullaniciyaHataGoster(ayarHatasi);
-
-            Debug.LogWarning(
-                "NPC baglanti ayari: " + ayarHatasi
-            );
-
+            Debug.LogWarning("NPC baglanti ayari: " + ayarHatasi);
             yield break;
         }
 
@@ -318,13 +267,10 @@ Yeni bir oyun eylemi uretme.
             sonuc => ilkIstek = sonuc
         );
 
-        if (ilkIstek == null ||
-            !ilkIstek.basarili)
+        if (ilkIstek == null || !ilkIstek.basarili)
         {
             KullaniciyaHataGoster(
-                ilkIstek != null
-                    ? ilkIstek.hata
-                    : GenelHataMesaji
+                ilkIstek != null ? ilkIstek.hata : GenelHataMesaji
             );
 
             yield break;
@@ -332,33 +278,60 @@ Yeni bir oyun eylemi uretme.
 
         NPCYanit karar;
 
-        if (!YanitAyrıstır(
-            ilkIstek.icerik,
-            out karar))
+        if (!YanitAyrıstır(ilkIstek.icerik, out karar))
         {
-            KullaniciyaHataGoster(
-                "NPC kararini duzgun olusturamadi. Tekrar dener misin?"
-            );
-
             Debug.LogWarning(
-                "Gecersiz NPC karar JSON'u: "
-                + KisaMetin(ilkIstek.icerik, 250)
+                "Ilk NPC karar cevabi JSON olarak okunamadi. Yeniden deneniyor. Ham cevap: "
+                + KisaMetin(ilkIstek.icerik, 1200)
             );
 
-            yield break;
+            kararMesajlari.Add(new MesajVerisi(
+                "user",
+                "Onceki cevabin gecerli bir JSON degildi veya eksik kaldi. " +
+                "Karari bastan degerlendir. Yalnizca su uc alani iceren eksiksiz ve gecerli JSON dondur: " +
+                "action, response, persuasionStatus. JSON disinda hicbir metin yazma."
+            ));
+
+            IstekSonucu tekrarIstek = null;
+
+            yield return OllamaIstekGonder(
+                kararMesajlari,
+                sonuc => tekrarIstek = sonuc
+            );
+
+            if (tekrarIstek == null ||
+                !tekrarIstek.basarili ||
+                !YanitAyrıstır(tekrarIstek.icerik, out karar))
+            {
+                KullaniciyaHataGoster(
+                    "NPC kararini olusturamadi. Mesajini tekrar gonderebilir misin?"
+                );
+
+                Debug.LogWarning(
+                    "NPC karar JSON'u ikinci denemede de okunamadi. Ham cevap: "
+                    + (tekrarIstek != null
+                        ? KisaMetin(tekrarIstek.icerik, 1200)
+                        : "Istek sonucu bos.")
+                );
+
+                yield break;
+            }
+
+            Debug.Log("NPC karar JSON'u ikinci denemede basariyla okundu.");
         }
 
         if (karar.action == "NONE" ||
-            karar.action == "BOSS_HINT")
+            karar.action == "BOSS_HINT" ||
+            karar.persuasionStatus == "PENDING" ||
+            karar.persuasionStatus == "REJECTED")
         {
-            CevabiGosterVeKaydet(
-                oyuncuMesaji,
-                karar
-            );
+            CevabiGosterVeKaydet(oyuncuMesaji, karar);
 
             Debug.Log(
                 "NPC yerel LLM cevabi: "
                 + karar.action
+                + " | Ikna durumu: "
+                + karar.persuasionStatus
             );
 
             yield break;
@@ -366,8 +339,7 @@ Yeni bir oyun eylemi uretme.
 
         if (npcCevapMetni != null)
         {
-            npcCevapMetni.text =
-                "Islem kontrol ediliyor...";
+            npcCevapMetni.text = "Islem kontrol ediliyor...";
         }
 
         NPCIslemSonucu unitySonucu =
@@ -386,10 +358,7 @@ Yeni bir oyun eylemi uretme.
         }
 
         List<MesajVerisi> sonucMesajlari =
-            SonucMesajlariniHazirla(
-                oyuncuMesaji,
-                unitySonucu
-            );
+            SonucMesajlariniHazirla(oyuncuMesaji, unitySonucu);
 
         IstekSonucu ikinciIstek = null;
 
@@ -398,58 +367,31 @@ Yeni bir oyun eylemi uretme.
             sonuc => ikinciIstek = sonuc
         );
 
-        if (ikinciIstek == null ||
-            !ikinciIstek.basarili)
-        {
-            if (unitySonucu.success)
-            {
-                KullaniciyaHataGoster(
-                    "Oyun islemi uygulandi ancak NPC su anda "
-                    + "aciklama uretemiyor. Tekrar konusabilirsin."
-                );
-            }
-            else
-            {
-                KullaniciyaHataGoster(
-                    "Islem gerceklestirilemedi ve NPC su anda "
-                    + "aciklama uretemiyor."
-                );
-            }
-
-            yield break;
-        }
-
         NPCYanit sonCevap;
 
-        if (!YanitAyrıstır(
-            ikinciIstek.icerik,
-            out sonCevap))
+        if (ikinciIstek != null &&
+            ikinciIstek.basarili &&
+            SonYanitAyrıstır(ikinciIstek.icerik, out sonCevap))
         {
-            KullaniciyaHataGoster(
-                "Islem sonucu alindi ancak NPC cevabi olusturulamadi."
-            );
-
-            Debug.LogWarning(
-                "NPC son cevap JSON'u gecersiz: "
-                + KisaMetin(ikinciIstek.icerik, 250)
-            );
-
-            yield break;
+            Debug.Log("NPC islem sonrasi aciklamasi basariyla alindi.");
         }
-
-        if (sonCevap.action != "NONE")
+        else
         {
-            KullaniciyaHataGoster(
-                "NPC son cevap asamasinda gecersiz bir karar uretti. "
-                + "Oyun eylemi guvenlik nedeniyle tekrarlanmadi."
-            );
+            string hamSonCevap = ikinciIstek != null
+                ? ikinciIstek.icerik
+                : "Ikinci Ollama istegi bos dondu.";
 
             Debug.LogWarning(
-                "Son cevap asamasinda NONE disinda action uretildi: "
-                + sonCevap.action
+                "NPC islem sonrasi aciklama uretemedi. Unity sonucuna dayali guvenli cevap kullaniliyor. Ham cevap: "
+                + KisaMetin(hamSonCevap, 1200)
             );
 
-            yield break;
+            sonCevap = new NPCYanit
+            {
+                action = "NONE",
+                response = IslemSonucunaGoreVarsayilanCevap(karar.action, unitySonucu),
+                persuasionStatus = "NONE"
+            };
         }
 
         if (SilahCevabiVeriyleCeliskiliMi(
@@ -462,10 +404,11 @@ Yeni bir oyun eylemi uretme.
                 "NPC sayisal cevabi duzeltiliyor: " + celiskiNedeni
             );
 
-            string duzeltilmisMetin = SayisalCevabiDuzelt(
-                sonCevap.response,
-                unitySonucu
-            );
+            string duzeltilmisMetin =
+                SayisalCevabiDuzelt(
+                    sonCevap.response,
+                    unitySonucu
+                );
 
             if (SilahCevabiVeriyleCeliskiliMi(
                 karar.action,
@@ -474,8 +417,7 @@ Yeni bir oyun eylemi uretme.
                 out string kalanCeliski))
             {
                 KullaniciyaHataGoster(
-                    "Islem basariyla uygulandi ancak NPC aciklamasindaki "
-                    + "sayisal bilgi dogrulanamadi. Tekrar sorabilirsin."
+                    "Islem uygulandi ancak NPC aciklamasindaki sayisal bilgi dogrulanamadi."
                 );
 
                 Debug.LogWarning(
@@ -487,19 +429,11 @@ Yeni bir oyun eylemi uretme.
             }
 
             sonCevap.response = duzeltilmisMetin;
-
-            Debug.Log(
-                "NPC'nin yerel LLM cevabindaki celiskili sayisal ifade "
-                + "Unity verisiyle uyumlu hale getirildi."
-            );
         }
 
         karar.response = sonCevap.response;
 
-        CevabiGosterVeKaydet(
-            oyuncuMesaji,
-            karar
-        );
+        CevabiGosterVeKaydet(oyuncuMesaji, karar);
 
         Debug.Log(
             "NPC eylemi Unity tarafinda kontrol edildi: "
@@ -508,49 +442,45 @@ Yeni bir oyun eylemi uretme.
             + unitySonucu.success
             + " | Sonuc kodu: "
             + unitySonucu.reasonCode
+            + " | Ikna durumu: "
+            + karar.persuasionStatus
         );
     }
 
     private IEnumerator OllamaIstekGonder(
         List<MesajVerisi> mesajlar,
-        Action<IstekSonucu> tamamlandi
-    )
+        Action<IstekSonucu> tamamlandi)
     {
-        OllamaIstek istekVerisi =
-            new OllamaIstek
+        OllamaIstek istekVerisi = new OllamaIstek
+        {
+            model = model.Trim(),
+            messages = mesajlar,
+            stream = false,
+            format = JsonCiktiSemasiniOlustur(),
+            think = false,
+            options = new OllamaSecenekleri
             {
-                model = model.Trim(),
-                messages = mesajlar,
-                stream = false,
-                format = JsonCiktiSemasiniOlustur(),
-
-                options = new OllamaSecenekleri
-                {
-                    temperature = 0f,
-                    num_predict = 180
-                }
-            };
+                temperature = 0f,
+                num_predict = 320
+            }
+        };
 
         string istekJson;
 
         try
         {
-            istekJson =
-                JsonUtility.ToJson(istekVerisi);
+            istekJson = JsonUtility.ToJson(istekVerisi);
         }
         catch (Exception hata)
         {
-            tamamlandi(
-                new IstekSonucu
-                {
-                    basarili = false,
-                    hata = GenelHataMesaji
-                }
-            );
+            tamamlandi(new IstekSonucu
+            {
+                basarili = false,
+                hata = GenelHataMesaji
+            });
 
             Debug.LogWarning(
-                "Ollama istek JSON'u olusturulamadi: "
-                + hata.Message
+                "Ollama istek JSON'u olusturulamadi: " + hata.Message
             );
 
             yield break;
@@ -558,13 +488,11 @@ Yeni bir oyun eylemi uretme.
 
         if (string.IsNullOrWhiteSpace(istekJson))
         {
-            tamamlandi(
-                new IstekSonucu
-                {
-                    basarili = false,
-                    hata = GenelHataMesaji
-                }
-            );
+            tamamlandi(new IstekSonucu
+            {
+                basarili = false,
+                hata = GenelHataMesaji
+            });
 
             yield break;
         }
@@ -576,19 +504,12 @@ Yeni bir oyun eylemi uretme.
 
         try
         {
-            istek = new UnityWebRequest(
-                ollamaURL.Trim(),
-                "POST"
-            );
-
+            istek = new UnityWebRequest(ollamaURL.Trim(), "POST");
             istek.uploadHandler =
                 new UploadHandlerRaw(gonderilecekVeri);
-
             istek.downloadHandler =
                 new DownloadHandlerBuffer();
-
-            istek.timeout =
-                Mathf.Max(1, zamanAsimiSaniye);
+            istek.timeout = Mathf.Max(1, zamanAsimiSaniye);
 
             istek.SetRequestHeader(
                 "Content-Type",
@@ -605,17 +526,14 @@ Yeni bir oyun eylemi uretme.
             if (istek != null)
                 istek.Dispose();
 
-            tamamlandi(
-                new IstekSonucu
-                {
-                    basarili = false,
-                    hata = GenelHataMesaji
-                }
-            );
+            tamamlandi(new IstekSonucu
+            {
+                basarili = false,
+                hata = GenelHataMesaji
+            });
 
             Debug.LogWarning(
-                "Ollama istegi hazirlanamadi: "
-                + hata.Message
+                "Ollama istegi hazirlanamadi: " + hata.Message
             );
 
             yield break;
@@ -637,17 +555,14 @@ Yeni bir oyun eylemi uretme.
 
             if (operasyon == null)
             {
-                tamamlandi(
-                    new IstekSonucu
-                    {
-                        basarili = false,
-                        hata = GenelHataMesaji
-                    }
-                );
+                tamamlandi(new IstekSonucu
+                {
+                    basarili = false,
+                    hata = GenelHataMesaji
+                });
 
                 Debug.LogWarning(
-                    "Ollama istegi baslatilamadi: "
-                    + baslatmaHatasi
+                    "Ollama istegi baslatilamadi: " + baslatmaHatasi
                 );
 
                 yield break;
@@ -655,12 +570,10 @@ Yeni bir oyun eylemi uretme.
 
             yield return operasyon;
 
-            if (istek.result !=
-                UnityWebRequest.Result.Success)
+            if (istek.result != UnityWebRequest.Result.Success)
             {
                 string hata =
-                    istek.error ??
-                    "Bilinmeyen baglanti hatasi";
+                    istek.error ?? "Bilinmeyen baglanti hatasi";
 
                 string sunucuDetayi =
                     istek.downloadHandler != null
@@ -668,41 +581,34 @@ Yeni bir oyun eylemi uretme.
                         : string.Empty;
 
                 string birlesikHata =
-                    (hata + " " + sunucuDetayi)
-                    .ToLowerInvariant();
+                    (hata + " " + sunucuDetayi).ToLowerInvariant();
 
                 string kullaniciMesaji;
 
                 if (birlesikHata.Contains("timeout"))
                 {
                     kullaniciMesaji =
-                        "NPC'nin yanit suresi doldu. "
-                        + "Biraz sonra tekrar deneyebilir misin?";
+                        "NPC'nin yanit suresi doldu. Biraz sonra tekrar deneyebilir misin?";
                 }
                 else if (
                     birlesikHata.Contains("model not found") ||
                     birlesikHata.Contains("model does not exist") ||
-                    birlesikHata.Contains("pull model")
-                )
+                    birlesikHata.Contains("pull model"))
                 {
                     kullaniciMesaji =
-                        "Istenen yerel model bulunamadi. "
-                        + "Ollama model kurulumunu kontrol et.";
+                        "Istenen yerel model bulunamadi. Ollama model kurulumunu kontrol et.";
                 }
                 else
                 {
                     kullaniciMesaji =
-                        "Istasyon yapay zeka sistemine ulasamiyorum. "
-                        + "Ollama'nin calistigini kontrol et.";
+                        "Istasyon yapay zeka sistemine ulasamiyorum. Ollama'nin calistigini kontrol et.";
                 }
 
-                tamamlandi(
-                    new IstekSonucu
-                    {
-                        basarili = false,
-                        hata = kullaniciMesaji
-                    }
-                );
+                tamamlandi(new IstekSonucu
+                {
+                    basarili = false,
+                    hata = kullaniciMesaji
+                });
 
                 Debug.LogWarning(
                     "Ollama baglanti/API hatasi. HTTP: "
@@ -726,23 +632,18 @@ Yeni bir oyun eylemi uretme.
             try
             {
                 ollamaCevap =
-                    JsonUtility.FromJson<OllamaCevap>(
-                        sunucuCevabi
-                    );
+                    JsonUtility.FromJson<OllamaCevap>(sunucuCevabi);
             }
             catch (Exception hata)
             {
-                tamamlandi(
-                    new IstekSonucu
-                    {
-                        basarili = false,
-                        hata = "Istasyon cevabi okunamadi. Tekrar dener misin?"
-                    }
-                );
+                tamamlandi(new IstekSonucu
+                {
+                    basarili = false,
+                    hata = "Istasyon cevabi okunamadi. Tekrar dener misin?"
+                });
 
                 Debug.LogWarning(
-                    "Ollama dis JSON hatasi: "
-                    + hata.Message
+                    "Ollama dis JSON hatasi: " + hata.Message
                 );
 
                 yield break;
@@ -750,66 +651,59 @@ Yeni bir oyun eylemi uretme.
 
             if (ollamaCevap == null)
             {
-                tamamlandi(
-                    new IstekSonucu
-                    {
-                        basarili = false,
-                        hata = "Istasyon cevabi bos geldi."
-                    }
-                );
+                tamamlandi(new IstekSonucu
+                {
+                    basarili = false,
+                    hata = "Istasyon cevabi bos geldi."
+                });
 
                 yield break;
             }
 
-            if (!string.IsNullOrWhiteSpace(
-                ollamaCevap.error))
+            if (!string.IsNullOrWhiteSpace(ollamaCevap.error))
             {
-                tamamlandi(
-                    new IstekSonucu
-                    {
-                        basarili = false,
-                        hata = "Yapay zeka modeli istegi tamamlayamadi. Modeli kontrol et."
-                    }
-                );
+                tamamlandi(new IstekSonucu
+                {
+                    basarili = false,
+                    hata = "Yapay zeka modeli istegi tamamlayamadi. Modeli kontrol et."
+                });
 
                 Debug.LogWarning(
-                    "Ollama API hatasi: "
-                    + ollamaCevap.error
+                    "Ollama API hatasi: " + ollamaCevap.error
                 );
 
                 yield break;
             }
 
             if (ollamaCevap.message == null ||
-                string.IsNullOrWhiteSpace(
-                    ollamaCevap.message.content))
+                string.IsNullOrWhiteSpace(ollamaCevap.message.content))
             {
-                tamamlandi(
-                    new IstekSonucu
-                    {
-                        basarili = false,
-                        hata = "NPC bos cevap dondurdu. Tekrar deneyebilir misin?"
-                    }
+                Debug.LogWarning(
+                    "Ollama bos cevap dondurdu. Sunucu cevabi: "
+                    + KisaMetin(sunucuCevabi, 1000)
                 );
+
+                tamamlandi(new IstekSonucu
+                {
+                    basarili = false,
+                    hata = "NPC bos cevap dondurdu. Tekrar deneyebilir misin?"
+                });
 
                 yield break;
             }
 
-            tamamlandi(
-                new IstekSonucu
-                {
-                    basarili = true,
-                    icerik = ollamaCevap.message.content.Trim(),
-                    hata = null
-                }
-            );
+            tamamlandi(new IstekSonucu
+            {
+                basarili = true,
+                icerik = ollamaCevap.message.content.Trim(),
+                hata = null
+            });
         }
     }
 
     private List<MesajVerisi> SonucMesajlariniHazirla(
         string oyuncuMesaji,
-        NPCIslemSonucu unitySonucu
-    )
+        NPCIslemSonucu unitySonucu)
     {
         List<MesajVerisi> mesajlar =
             new List<MesajVerisi>();
@@ -824,38 +718,19 @@ Yeni bir oyun eylemi uretme.
             + "UNITY_ISLEM_SONUCU_VERISI:\n"
             + JsonUtility.ToJson(unitySonucu);
 
-        mesajlar.Add(
-            new MesajVerisi(
-                "system",
-                sonSystemPrompt
-            )
-        );
+        mesajlar.Add(new MesajVerisi("system", sonSystemPrompt));
 
-        for (int i = 0;
-             i < konusmaGecmisi.Count;
-             i++)
+        for (int i = 0; i < konusmaGecmisi.Count; i++)
         {
-            mesajlar.Add(
-                konusmaGecmisi[i]
-            );
+            mesajlar.Add(konusmaGecmisi[i]);
         }
 
-        mesajlar.Add(
-            new MesajVerisi(
-                "user",
-                oyuncuMesaji
-            )
-        );
+        mesajlar.Add(new MesajVerisi("user", oyuncuMesaji));
 
-        mesajlar.Add(
-            new MesajVerisi(
-                "user",
-                "Unity tarafindaki islem sonucunu esas alarak "
-                + "oyuncuya dogal Turkce bir cevap ver. "
-                + "Yeni bir oyun eylemi baslatma. "
-                + "Yalnizca zorunlu JSON formatini dondur."
-            )
-        );
+        mesajlar.Add(new MesajVerisi(
+            "user",
+            "Unity tarafindaki islem sonucunu esas alarak oyuncuya dogal Turkce bir cevap ver. Yeni bir oyun eylemi baslatma. action NONE ve persuasionStatus NONE olmali. Yalnizca zorunlu JSON formatini dondur."
+        ));
 
         return mesajlar;
     }
@@ -864,8 +739,7 @@ Yeni bir oyun eylemi uretme.
         string eylem,
         NPCIslemSonucu unitySonucu,
         string cevap,
-        out string celiskiNedeni
-    )
+        out string celiskiNedeni)
     {
         celiskiNedeni = null;
 
@@ -884,17 +758,70 @@ Yeni bir oyun eylemi uretme.
             return true;
         }
 
-        string beklenenHasar = unitySonucu.currentDamage.ToString(
-            "0.##",
-            CultureInfo.InvariantCulture
-        );
+        string beklenenHasar =
+            unitySonucu.currentDamage.ToString(
+                "0.##",
+                CultureInfo.InvariantCulture
+            );
 
-        if (!Regex.IsMatch(
-            normalCevap,
-            @"(?<!\d)" + Regex.Escape(beklenenHasar) + @"(?!\d)"))
+        string beklenenHasarDeseni =
+            @"(?<!\d)" + Regex.Escape(beklenenHasar) + @"(?!\d)";
+
+        string[] hataliKarsilastirmalar =
+        {
+            @"\b" + Regex.Escape(beklenenHasar) + @"\s*(den|dan)\s*(daha\s*)?(yuksek|fazla|buyuk)\b",
+            @"\b" + Regex.Escape(beklenenHasar) + @"\s*(un|in|nun|nin)\s*(uzerinde|ustunde|yukarida)\b",
+            @"\b" + Regex.Escape(beklenenHasar) + @"\s*(u|yu|yi)\s*(asti|asiyor|geciyor|gecmis)\b",
+            @"\b" + Regex.Escape(beklenenHasar) + @"\s*(ustune|uzerine)\s*(cikti|yukseldi)\b"
+        };
+
+        for (int i = 0; i < hataliKarsilastirmalar.Length; i++)
+        {
+            if (Regex.IsMatch(normalCevap, hataliKarsilastirmalar[i]))
+            {
+                celiskiNedeni =
+                    "Cevap, Unity tarafindan dogrulanan hasar degerinden daha yuksek bir deger iddia ediyor.";
+
+                return true;
+            }
+        }
+
+        bool sayisalDegerIceriyor =
+            Regex.IsMatch(normalCevap, @"\d");
+
+        if (!sayisalDegerIceriyor)
+        {
+            return false;
+        }
+
+        bool beklenenTekLazerHasariVar =
+            Regex.IsMatch(normalCevap, beklenenHasarDeseni);
+
+        string beklenenToplamHasar =
+            (unitySonucu.currentDamage * 2f).ToString(
+                "0.##",
+                CultureInfo.InvariantCulture
+            );
+
+        string beklenenToplamHasarDeseni =
+            @"(?<!\d)" + Regex.Escape(beklenenToplamHasar) + @"(?!\d)";
+
+        bool ikiLazerToplamindanBahsediyor =
+            normalCevap.Contains("iki lazer") ||
+            normalCevap.Contains("her iki lazer") ||
+            normalCevap.Contains("iki atis") ||
+            normalCevap.Contains("toplam");
+
+        bool beklenenIkiLazerToplamiVar =
+            ikiLazerToplamindanBahsediyor &&
+            Regex.IsMatch(normalCevap, beklenenToplamHasarDeseni);
+
+        if (!beklenenTekLazerHasariVar &&
+            !beklenenIkiLazerToplamiVar)
         {
             celiskiNedeni =
-                "Cevap Unity tarafindan dogrulanan lazer hasarini belirtmiyor.";
+                "Cevapta Unity tarafindan dogrulanan lazer hasari veya iki lazerin dogru toplam hasari bulunmuyor.";
+
             return true;
         }
 
@@ -903,27 +830,9 @@ Yeni bir oyun eylemi uretme.
             !normalCevap.Contains("silah"))
         {
             celiskiNedeni =
-                "Cevapta sayisal degerin silah veya lazer hasari oldugu acik degil.";
+                "Sayisal degerin silah veya lazer hasari oldugu acik degil.";
+
             return true;
-        }
-
-        string[] hataliKarsilastirmalar =
-        {
-            @"\b100\s*(den|dan)\s*(daha\s*)?(yuksek|fazla|buyuk)\b",
-            @"\b100\s*(un|in|nun|nin)\s*(uzerinde|ustunde|yukarida)\b",
-            @"\b100\s*(u|yu|yi)\s*(asti|asiyor|geciyor|gecmis)\b",
-            @"\b100\s*(ustune|uzerine)\s*(cikti|yukseldi)\b",
-            @"\b(yuzden|yuzun)\s*(daha\s*)?(yuksek|fazla|buyuk|uzerinde)\b"
-        };
-
-        for (int i = 0; i < hataliKarsilastirmalar.Length; i++)
-        {
-            if (Regex.IsMatch(normalCevap, hataliKarsilastirmalar[i]))
-            {
-                celiskiNedeni =
-                    "Cevap, 100 hasarin 100'den yuksek oldugunu iddia ediyor.";
-                return true;
-            }
         }
 
         return false;
@@ -931,71 +840,52 @@ Yeni bir oyun eylemi uretme.
 
     private string SayisalCevabiDuzelt(
         string cevap,
-        NPCIslemSonucu unitySonucu
-    )
+        NPCIslemSonucu unitySonucu)
     {
-        if (string.IsNullOrWhiteSpace(cevap) || unitySonucu == null)
+        if (string.IsNullOrWhiteSpace(cevap) ||
+            unitySonucu == null)
+        {
             return cevap;
+        }
 
-        string beklenenHasar = unitySonucu.currentDamage.ToString(
-            "0.##",
-            CultureInfo.InvariantCulture
-        );
+        string beklenenHasar =
+            unitySonucu.currentDamage.ToString(
+                "0.##",
+                CultureInfo.InvariantCulture
+            );
 
         string sayi = Regex.Escape(beklenenHasar);
         string duzeltilmis = cevap;
 
-        string sonucIleBitirenHatalar =
-            @"(?i)(?<!\d)" + sayi
-            + @"\s*['’]?\s*(?:den|dan)\s*(?:daha\s*)?"
-            + @"(?:yüksek|fazla|büyük)\s*"
-            + @"(?:bir\s*)?(?:seviyeye\s*)?(?:hale\s*)?"
-            + @"(?:getirildi|geldi|çıktı|yükseldi|oldu)";
-
-        duzeltilmis = Regex.Replace(
-            duzeltilmis,
-            sonucIleBitirenHatalar,
-            beklenenHasar + "'e yükseltildi",
-            RegexOptions.IgnoreCase
-        );
-
-        string karsilastirmaIleBitenHatalar =
+        string hataliKarsilastirma =
             @"(?i)(?<!\d)" + sayi
             + @"\s*['’]?\s*(?:den|dan)\s*(?:daha\s*)?"
             + @"(?:yüksek|fazla|büyük)\b";
 
         duzeltilmis = Regex.Replace(
             duzeltilmis,
-            karsilastirmaIleBitenHatalar,
+            hataliKarsilastirma,
             "tam " + beklenenHasar,
             RegexOptions.IgnoreCase
         );
 
-        string ustundeHatalari =
+        string hataliUstunde =
             @"(?i)(?<!\d)" + sayi
             + @"\s*['’]?\s*(?:un|ün|ın|in)\s*"
             + @"(?:üzerinde|üstünde|yukarısında)";
 
         duzeltilmis = Regex.Replace(
             duzeltilmis,
-            ustundeHatalari,
+            hataliUstunde,
             "tam " + beklenenHasar,
             RegexOptions.IgnoreCase
         );
 
-        string asmaHatalari =
-            @"(?i)(?<!\d)" + sayi
-            + @"\s*['’]?\s*(?:u|ü|ı|i)\s*"
-            + @"(?:aştı|aşıyor|geçti|geçiyor)";
-
-        duzeltilmis = Regex.Replace(
+        return Regex.Replace(
             duzeltilmis,
-            asmaHatalari,
-            beklenenHasar + "'e ulaştı",
-            RegexOptions.IgnoreCase
-        );
-
-        return Regex.Replace(duzeltilmis, @"\s+", " ").Trim();
+            @"\s+",
+            " "
+        ).Trim();
     }
 
     private string MetniNormalizeEt(string metin)
@@ -1021,14 +911,11 @@ Yeni bir oyun eylemi uretme.
             " "
         );
 
-        sonuc = Regex.Replace(sonuc, @"\s+", " ").Trim();
-
-        return sonuc;
+        return Regex.Replace(sonuc, @"\s+", " ").Trim();
     }
 
     private List<MesajVerisi> MesajlariHazirla(
-        string oyuncuMesaji
-    )
+        string oyuncuMesaji)
     {
         List<MesajVerisi> mesajlar =
             new List<MesajVerisi>();
@@ -1038,35 +925,20 @@ Yeni bir oyun eylemi uretme.
             + "\n\n"
             + DiyalogTutarlilikKurallari;
 
-        mesajlar.Add(
-            new MesajVerisi(
-                "system",
-                sonSystemPrompt
-            )
-        );
+        mesajlar.Add(new MesajVerisi("system", sonSystemPrompt));
 
-        for (int i = 0;
-             i < konusmaGecmisi.Count;
-             i++)
+        for (int i = 0; i < konusmaGecmisi.Count; i++)
         {
-            mesajlar.Add(
-                konusmaGecmisi[i]
-            );
+            mesajlar.Add(konusmaGecmisi[i]);
         }
 
-        mesajlar.Add(
-            new MesajVerisi(
-                "user",
-                oyuncuMesaji
-            )
-        );
+        mesajlar.Add(new MesajVerisi("user", oyuncuMesaji));
 
         return mesajlar;
     }
 
     private bool BaglantiAyarlariGecerli(
-        out string hataMesaji
-    )
+        out string hataMesaji)
     {
         hataMesaji = null;
 
@@ -1123,22 +995,27 @@ Yeni bir oyun eylemi uretme.
                 {
                     type = "string",
                     minLength = 1
+                },
+
+                persuasionStatus = new OllamaStringSemasi
+                {
+                    type = "string",
+                    minLength = 1
                 }
             },
 
             required = new[]
             {
                 "action",
-                "response"
+                "response",
+                "persuasionStatus"
             },
 
             additionalProperties = false
         };
     }
 
-    private NPCIslemSonucu EylemiGuvenliUygula(
-        string eylem
-    )
+    private NPCIslemSonucu EylemiGuvenliUygula(string eylem)
     {
         if (eylemYoneticisi == null)
         {
@@ -1175,10 +1052,149 @@ Yeni bir oyun eylemi uretme.
         }
     }
 
+    private bool OncekiIknaBekliyorMu()
+    {
+        for (int i = konusmaGecmisi.Count - 1; i >= 0; i--)
+        {
+            MesajVerisi mesaj = konusmaGecmisi[i];
+
+            if (mesaj == null || mesaj.role != "assistant")
+                continue;
+
+            NPCYanit oncekiYanit = null;
+
+            try
+            {
+                oncekiYanit =
+                    JsonUtility.FromJson<NPCYanit>(mesaj.content);
+            }
+            catch
+            {
+                return false;
+            }
+
+            return oncekiYanit != null &&
+                   oncekiYanit.persuasionStatus == "PENDING";
+        }
+
+        return false;
+    }
+
+    private bool SonYanitAyrıstır(
+        string json,
+        out NPCYanit npcYanit)
+    {
+        npcYanit = null;
+
+        if (string.IsNullOrWhiteSpace(json))
+            return false;
+
+        string temizJson = json.Trim();
+        int jsonBaslangici = temizJson.IndexOf('{');
+        int jsonBitisi = temizJson.LastIndexOf('}');
+
+        if (jsonBaslangici < 0 || jsonBitisi < jsonBaslangici)
+            return false;
+
+        temizJson = temizJson.Substring(
+            jsonBaslangici,
+            jsonBitisi - jsonBaslangici + 1
+        );
+
+        NPCYanit ayrilanYanit;
+
+        try
+        {
+            ayrilanYanit = JsonUtility.FromJson<NPCYanit>(temizJson);
+        }
+        catch (Exception hata)
+        {
+            Debug.LogWarning("NPC son cevap JSON ayristirma hatasi: " + hata.Message);
+            return false;
+        }
+
+        if (ayrilanYanit == null ||
+            string.IsNullOrWhiteSpace(ayrilanYanit.response))
+        {
+            return false;
+        }
+
+        string cevap = ayrilanYanit.response.Trim();
+        int cevapSiniri = Mathf.Max(50, maksimumCevapKarakterSayisi);
+
+        if (cevap.Length > cevapSiniri)
+            cevap = cevap.Substring(0, cevapSiniri).Trim();
+
+        npcYanit = new NPCYanit
+        {
+            action = "NONE",
+            response = cevap,
+            persuasionStatus = "NONE"
+        };
+
+        return true;
+    }
+
+    private string IslemSonucunaGoreVarsayilanCevap(
+        string eylem,
+        NPCIslemSonucu sonuc)
+    {
+        if (sonuc == null)
+            return "Islem sonucu alindi ancak ayrintilar okunamadi.";
+
+        string currentHp = sonuc.currentHp.ToString("0.##", CultureInfo.InvariantCulture);
+        string maxHp = sonuc.maxHp.ToString("0.##", CultureInfo.InvariantCulture);
+        string currentDamage = sonuc.currentDamage.ToString("0.##", CultureInfo.InvariantCulture);
+        string toplamHasar = (sonuc.currentDamage * 2f).ToString("0.##", CultureInfo.InvariantCulture);
+
+        switch (sonuc.reasonCode)
+        {
+            case "HEALED":
+                return "Geminin cani " + currentHp + " / " + maxHp + " HP seviyesine tamamlandi.";
+
+            case "ALREADY_FULL":
+                return "Geminin cani zaten maksimum seviyede: " + currentHp + " / " + maxHp + " HP.";
+
+            case "MAX_HP_UPGRADED":
+                return "Maksimum can kapasiten ve mevcut canin " + maxHp + " HP olarak guncellendi.";
+
+            case "DAMAGE_UPGRADED":
+                return "Silah hasarin her lazer icin " + currentDamage + " HP oldu. Iki lazer de isabet ederse toplam " + toplamHasar + " HP hasar verebilirsin.";
+
+            case "ALREADY_UPGRADED":
+                return "Silahin zaten guclendirilmis durumda. Her lazer " + currentDamage + " HP hasar veriyor.";
+
+            case "GAME_FINISHED":
+                return "Oyun tamamlandigi icin yeni bir islem uygulayamadim.";
+
+            case "NOT_IMPLEMENTED":
+                return "Bu oyun eylemi henuz uygulanmiyor.";
+
+            case "MISSING_ACTION_MANAGER":
+                return "NPC islem sistemi bulunamadi. Islem uygulanamadi.";
+
+            case "SHIP_MANAGER_MISSING":
+                return "Gemi yoneticisine ulasilamadigi icin islem uygulanamadi.";
+
+            case "GAME_MANAGER_MISSING":
+                return "Oyun yoneticisine ulasilamadigi icin islem uygulanamadi.";
+
+            case "SHIP_NOT_FOUND":
+                return "Aktif oyuncu gemisi bulunamadigi icin islem uygulanamadi.";
+
+            case "SHIP_DATA_MISSING":
+                return "Gemi verileri bulunamadigi icin islem uygulanamadi.";
+
+            default:
+                return sonuc.success
+                    ? "Istedigin islem oyun tarafinda basariyla uygulandi."
+                    : "Istedigin islem uygulanamadi. Oyun sistemini kontrol etmeliyiz.";
+        }
+    }
+
     private bool YanitAyrıstır(
         string json,
-        out NPCYanit npcYanit
-    )
+        out NPCYanit npcYanit)
     {
         npcYanit = null;
 
@@ -1187,40 +1203,39 @@ Yeni bir oyun eylemi uretme.
 
         string temizJson = json.Trim();
 
-        if (!temizJson.StartsWith(
-                "{",
-                StringComparison.Ordinal
-            ) ||
-            !temizJson.EndsWith(
-                "}",
-                StringComparison.Ordinal
-            ))
+        int jsonBaslangici = temizJson.IndexOf('{');
+        int jsonBitisi = temizJson.LastIndexOf('}');
+
+        if (jsonBaslangici < 0 ||
+            jsonBitisi < jsonBaslangici)
         {
             return false;
         }
 
+        temizJson = temizJson.Substring(
+            jsonBaslangici,
+            jsonBitisi - jsonBaslangici + 1
+        );
+
         try
         {
             npcYanit =
-                JsonUtility.FromJson<NPCYanit>(
-                    temizJson
-                );
+                JsonUtility.FromJson<NPCYanit>(temizJson);
         }
         catch (Exception hata)
         {
             Debug.LogWarning(
-                "NPC JSON ayristirma hatasi: "
-                + hata.Message
+                "NPC JSON ayristirma hatasi: " + hata.Message
             );
 
             npcYanit = null;
-
             return false;
         }
 
         if (npcYanit == null ||
             string.IsNullOrWhiteSpace(npcYanit.action) ||
-            string.IsNullOrWhiteSpace(npcYanit.response))
+            string.IsNullOrWhiteSpace(npcYanit.response) ||
+            string.IsNullOrWhiteSpace(npcYanit.persuasionStatus))
         {
             npcYanit = null;
             return false;
@@ -1228,6 +1243,9 @@ Yeni bir oyun eylemi uretme.
 
         npcYanit.action =
             npcYanit.action.Trim().ToUpperInvariant();
+
+        npcYanit.persuasionStatus =
+            npcYanit.persuasionStatus.Trim().ToUpperInvariant();
 
         npcYanit.response =
             npcYanit.response.Trim();
@@ -1240,10 +1258,61 @@ Yeni bir oyun eylemi uretme.
         if (npcYanit.response.Length > cevapSiniri)
         {
             npcYanit.response =
-                npcYanit.response.Substring(
-                    0,
-                    cevapSiniri
-                ).Trim();
+                npcYanit.response.Substring(0, cevapSiniri).Trim();
+        }
+
+        bool izinliOyunEylemi =
+            npcYanit.action == "HEAL" ||
+            npcYanit.action == "MAX_HEAL" ||
+            npcYanit.action == "BOOST_DAMAGE";
+
+        switch (npcYanit.persuasionStatus)
+        {
+            case "NONE":
+                if (izinliOyunEylemi && !OncekiIknaBekliyorMu())
+                {
+                    Debug.LogWarning(
+                        "NPC acik eylem talebinde izinli bir action secti ancak NONE dondurdu. DIRECT olarak duzeltiliyor."
+                    );
+
+                    npcYanit.persuasionStatus = "DIRECT";
+                }
+                else if (npcYanit.action != "NONE" &&
+                         npcYanit.action != "BOSS_HINT")
+                {
+                    npcYanit = null;
+                    return false;
+                }
+                break;
+
+            case "DIRECT":
+            case "ACCEPTED":
+                if (!izinliOyunEylemi)
+                {
+                    npcYanit = null;
+                    return false;
+                }
+                break;
+
+            case "PENDING":
+            case "REJECTED":
+                if (npcYanit.action != "NONE")
+                {
+                    npcYanit = null;
+                    return false;
+                }
+                break;
+
+            default:
+                npcYanit = null;
+                return false;
+        }
+
+        if (npcYanit.action == "BOSS_HINT" &&
+            npcYanit.persuasionStatus != "NONE")
+        {
+            npcYanit = null;
+            return false;
         }
 
         switch (npcYanit.action)
@@ -1252,7 +1321,6 @@ Yeni bir oyun eylemi uretme.
             case "MAX_HEAL":
             case "BOOST_DAMAGE":
             case "BOSS_HINT":
-            case "UNLOCK_DOOR":
             case "NONE":
                 return true;
 
@@ -1264,30 +1332,22 @@ Yeni bir oyun eylemi uretme.
 
     private void CevabiGosterVeKaydet(
         string oyuncuMesaji,
-        NPCYanit npcYanit
-    )
+        NPCYanit npcYanit)
     {
         if (npcCevapMetni != null)
         {
-            npcCevapMetni.text =
-                npcYanit.response;
+            npcCevapMetni.text = npcYanit.response;
         }
 
         string kaydedilecekJson =
             JsonUtility.ToJson(npcYanit);
 
         konusmaGecmisi.Add(
-            new MesajVerisi(
-                "user",
-                oyuncuMesaji
-            )
+            new MesajVerisi("user", oyuncuMesaji)
         );
 
         konusmaGecmisi.Add(
-            new MesajVerisi(
-                "assistant",
-                kaydedilecekJson
-            )
+            new MesajVerisi("assistant", kaydedilecekJson)
         );
 
         GecmisiSinirla();
@@ -1308,9 +1368,7 @@ Yeni bir oyun eylemi uretme.
         }
     }
 
-    private void KullaniciyaHataGoster(
-        string mesaj
-    )
+    private void KullaniciyaHataGoster(string mesaj)
     {
         if (npcCevapMetni != null)
         {
@@ -1318,13 +1376,9 @@ Yeni bir oyun eylemi uretme.
         }
     }
 
-    private string KisaMetin(
-        string metin,
-        int sinir
-    )
+    private string KisaMetin(string metin, int sinir)
     {
-        if (string.IsNullOrEmpty(metin) ||
-            metin.Length <= sinir)
+        if (string.IsNullOrEmpty(metin) || metin.Length <= sinir)
         {
             return metin;
         }
@@ -1338,10 +1392,7 @@ Yeni bir oyun eylemi uretme.
         public string role;
         public string content;
 
-        public MesajVerisi(
-            string role,
-            string content
-        )
+        public MesajVerisi(string role, string content)
         {
             this.role = role;
             this.content = content;
@@ -1355,6 +1406,7 @@ Yeni bir oyun eylemi uretme.
         public List<MesajVerisi> messages;
         public bool stream;
         public OllamaJsonSemasi format;
+        public bool think;
         public OllamaSecenekleri options;
     }
 
@@ -1372,6 +1424,7 @@ Yeni bir oyun eylemi uretme.
     {
         public OllamaStringSemasi action;
         public OllamaStringSemasi response;
+        public OllamaStringSemasi persuasionStatus;
     }
 
     [Serializable]

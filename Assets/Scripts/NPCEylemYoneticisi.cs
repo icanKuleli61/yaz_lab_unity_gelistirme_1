@@ -1,4 +1,3 @@
-
 using UnityEngine;
 
 public class NPCEylemYoneticisi : MonoBehaviour
@@ -10,7 +9,6 @@ public class NPCEylemYoneticisi : MonoBehaviour
     [Header("Silah Guclendirme")]
     private const float GuclendirilmisHasar = 100f;
 
-    // Eski metodu kullanan baska kodlar varsa calismaya devam eder.
     public bool EylemiGerceklestir(string eylem)
     {
         NPCIslemSonucu sonuc =
@@ -19,8 +17,6 @@ public class NPCEylemYoneticisi : MonoBehaviour
         return sonuc != null && sonuc.success;
     }
 
-    // Eylemi uygular ve oyuncuya gosterilecek metin yerine
-    // Unity tarafindaki gercek oyun verilerini dondurur.
     public NPCIslemSonucu EylemiGerceklestirSonucuyla(
         string eylem
     )
@@ -37,7 +33,6 @@ public class NPCEylemYoneticisi : MonoBehaviour
         string secilenEylem =
             eylem.Trim().ToUpperInvariant();
 
-        // Normal sohbet oyun bilesenlerine bagli degildir.
         if (secilenEylem == "NONE")
         {
             return YeniSonuc(
@@ -47,7 +42,6 @@ public class NPCEylemYoneticisi : MonoBehaviour
             );
         }
 
-        // Boss tavsiyesi oyun durumunu degistirmez.
         if (secilenEylem == "BOSS_HINT")
         {
             return YeniSonuc(
@@ -57,21 +51,6 @@ public class NPCEylemYoneticisi : MonoBehaviour
             );
         }
 
-        // Kapi mekanizmasi henuz tamamlanmadi.
-        if (secilenEylem == "UNLOCK_DOOR")
-        {
-            Debug.LogWarning(
-                "UNLOCK_DOOR henuz uygulanmadi."
-            );
-
-            return YeniSonuc(
-                secilenEylem,
-                false,
-                "NOT_IMPLEMENTED"
-            );
-        }
-
-        // Yalnizca gercekten desteklenen eylemler.
         if (secilenEylem != "HEAL" &&
             secilenEylem != "MAX_HEAL" &&
             secilenEylem != "BOOST_DAMAGE")
@@ -87,7 +66,6 @@ public class NPCEylemYoneticisi : MonoBehaviour
             );
         }
 
-        // Oyun bilesenleri kontrolu.
         if (gemiYonetici == null)
         {
             Debug.LogWarning(
@@ -161,10 +139,6 @@ public class NPCEylemYoneticisi : MonoBehaviour
         }
     }
 
-    // --------------------------------------------------
-    // AKTIF GEMI VERISINI AL
-    // --------------------------------------------------
-
     private GemiData AktifGemiVerisiniAl(
         out string hataKodu
     )
@@ -205,12 +179,6 @@ public class NPCEylemYoneticisi : MonoBehaviour
 
         return gemiData;
     }
-
-    // --------------------------------------------------
-    // NORMAL IYILESTIRME
-    // Mevcut cani maksimum cana tamamlar.
-    // Maksimum can kapasitesini degistirmez.
-    // --------------------------------------------------
 
     private NPCIslemSonucu GemiyiIyilestir(
         GemiData gemiData
@@ -267,11 +235,6 @@ public class NPCEylemYoneticisi : MonoBehaviour
         return sonuc;
     }
 
-    // --------------------------------------------------
-    // MAKSIMUM CAN YUKSELTME
-    // Mevcut ve maksimum cani 1500 yapar.
-    // --------------------------------------------------
-
     private NPCIslemSonucu MaksimumCanYukselt(
         GemiData gemiData
     )
@@ -313,12 +276,6 @@ public class NPCEylemYoneticisi : MonoBehaviour
         return sonuc;
     }
 
-    // --------------------------------------------------
-    // SILAH GUCLENDIRME
-    // Normal hasar: 30
-    // Guclendirilmis hasar: 100
-    // --------------------------------------------------
-
     private NPCIslemSonucu SilahiGuclendir(
         GemiData gemiData
     )
@@ -326,7 +283,10 @@ public class NPCEylemYoneticisi : MonoBehaviour
         float oncekiHasar =
             gemiData.GetHasar();
 
-        if (oncekiHasar < GuclendirilmisHasar)
+        bool zatenGuclendirilmis =
+            oncekiHasar >= GuclendirilmisHasar;
+
+        if (!zatenGuclendirilmis)
         {
             gemiData.SetHasar(
                 GuclendirilmisHasar
@@ -337,7 +297,7 @@ public class NPCEylemYoneticisi : MonoBehaviour
             gemiData.GetHasar();
 
         string reasonCode =
-            oncekiHasar >= GuclendirilmisHasar
+            zatenGuclendirilmis
                 ? "ALREADY_UPGRADED"
                 : "DAMAGE_UPGRADED";
 
@@ -346,6 +306,8 @@ public class NPCEylemYoneticisi : MonoBehaviour
             + oncekiHasar
             + " -> "
             + guncelHasar
+            + " | Sonuc: "
+            + reasonCode
         );
 
         NPCIslemSonucu sonuc =
@@ -360,10 +322,6 @@ public class NPCEylemYoneticisi : MonoBehaviour
 
         return sonuc;
     }
-
-    // --------------------------------------------------
-    // SONUC NESNESI OLUSTUR
-    // --------------------------------------------------
 
     private NPCIslemSonucu YeniSonuc(
         string eylem,

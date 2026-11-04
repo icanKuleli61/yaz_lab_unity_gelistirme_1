@@ -1,4 +1,3 @@
-
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -39,8 +38,6 @@ public class BotYardimPanelKontrol : MonoBehaviour
 
         if (companionMission != null)
             companionMission.BaslatSalterGorevi();
-        else
-            Debug.LogWarning("BotYardimPanelKontrol: CompanionMission atanmamis!");
     }
 
     public void HayirButonunaBasildi()

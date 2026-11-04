@@ -1,4 +1,3 @@
-
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -16,7 +15,6 @@ public class BotTiklamaKontrol : MonoBehaviour
 
     private void OnMouseDown()
     {
-        // Salter aktifse tiklama islemi yapma.
         if (salterKontrol != null && salterKontrol.aktifMi)
             return;
 

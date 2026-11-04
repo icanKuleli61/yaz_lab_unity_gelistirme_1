@@ -1,4 +1,3 @@
-
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.InputSystem;
@@ -39,7 +38,6 @@ public class CompanionMission : MonoBehaviour
 
         if (agent == null)
         {
-            Debug.LogError("Companion: NavMeshAgent bulunamadi!");
             enabled = false;
             return;
         }
@@ -51,14 +49,12 @@ public class CompanionMission : MonoBehaviour
         if (!NavMesh.SamplePosition(
             transform.position, out botHit, 10f, NavMesh.AllAreas))
         {
-            Debug.LogError("Companion: Botun yakininda NavMesh yok!");
             enabled = false;
             return;
         }
 
         if (!agent.Warp(botHit.position) || !agent.isOnNavMesh)
         {
-            Debug.LogError("Companion: Bot NavMesh'e yerlestirilemedi!");
             enabled = false;
             return;
         }
@@ -79,7 +75,6 @@ public class CompanionMission : MonoBehaviour
 
         if (switchControl == null)
         {
-            Debug.LogError("Companion: SalterKontrol bulunamadi!");
             enabled = false;
             return;
         }
@@ -88,15 +83,12 @@ public class CompanionMission : MonoBehaviour
             oldFollow.enabled = false;
 
         agent.stoppingDistance = stoppingDistance;
-
-        Debug.Log("Companion hazir! T tusuyla veya panelden gorevi baslat.");
     }
 
     public void BaslatSalterGorevi()
     {
         if (shipTransform == null)
         {
-            Debug.LogWarning("Companion: Gemi artik mevcut degil!");
             return;
         }
 
@@ -105,26 +97,22 @@ public class CompanionMission : MonoBehaviour
 
         if (state != MissionState.FollowShip)
         {
-            Debug.Log("Companion: Zaten bir gorev yapiyorum!");
             return;
         }
 
         if (switchControl == null || switchControl.aktifMi)
         {
-            Debug.Log("Companion: Salter zaten aktif veya kontrol bulunamadi!");
             return;
         }
 
         if (SetDestination(switchTransform.position))
         {
             state = MissionState.GoingToSwitch;
-            Debug.Log("Companion: Saltere gidiyorum!");
         }
     }
 
     void Update()
     {
-        // Gemi yok edildiyse botun takip etmesini durdur.
         if (shipTransform == null)
         {
             if (agent != null && agent.enabled && agent.isOnNavMesh)
@@ -151,8 +139,6 @@ public class CompanionMission : MonoBehaviour
 
         if (state == MissionState.GoingToSwitch && HasArrived())
         {
-            Debug.Log("Companion: Saltere ulastim!");
-
             if (switchControl == null)
                 return;
 
@@ -162,14 +148,12 @@ public class CompanionMission : MonoBehaviour
                 SetDestination(GemiYanindakiHedef()))
             {
                 state = MissionState.ReturningToShip;
-                Debug.Log("Companion: Gemiye geri donuyorum!");
             }
         }
 
         if (state == MissionState.ReturningToShip && HasArrived())
         {
             state = MissionState.FollowShip;
-            Debug.Log("Companion: Gemiye dondum, takibe devam!");
         }
     }
 
@@ -201,8 +185,6 @@ public class CompanionMission : MonoBehaviour
             targetSearchRadius,
             NavMesh.AllAreas))
         {
-            Debug.LogWarning(
-                "Companion: NavMesh bulunamadi. Hedef: " + targetPosition);
             return false;
         }
 
@@ -212,18 +194,14 @@ public class CompanionMission : MonoBehaviour
 
         if (!pathFound || path.status != NavMeshPathStatus.PathComplete)
         {
-            Debug.LogWarning(
-                "Companion: Hedefe tam rota yok. Hedef: " + targetHit.position);
             return false;
         }
 
         if (!agent.SetDestination(targetHit.position))
         {
-            Debug.LogWarning("Companion: Rota ayarlanamadi!");
             return false;
         }
 
-        Debug.Log("Companion: Rota ayarlandi: " + targetHit.position);
         return true;
     }
 

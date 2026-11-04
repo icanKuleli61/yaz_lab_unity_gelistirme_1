@@ -1,4 +1,3 @@
-
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -28,7 +27,6 @@ public class CompanionFollow : MonoBehaviour
     {
         if (agent == null)
         {
-            Debug.LogError("Aibot: NavMeshAgent bulunamadi!");
             enabled = false;
             return;
         }
@@ -44,7 +42,6 @@ public class CompanionFollow : MonoBehaviour
 
         if (targetTransform == null)
         {
-            Debug.LogError("Aibot: Gemi bulunamadi!");
             enabled = false;
             return;
         }
@@ -54,7 +51,6 @@ public class CompanionFollow : MonoBehaviour
         if (!NavMesh.SamplePosition(
             transform.position, out hit, 10f, NavMesh.AllAreas))
         {
-            Debug.LogError("Aibot: Yakininda NavMesh yok!");
             enabled = false;
             return;
         }
@@ -69,8 +65,6 @@ public class CompanionFollow : MonoBehaviour
         }
 
         agent.stoppingDistance = stoppingDistance;
-
-        Debug.Log("Aibot: Takip sistemi hazir!");
     }
 
     void Update()
