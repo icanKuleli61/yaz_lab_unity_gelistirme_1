@@ -1,3 +1,4 @@
+
 using UnityEngine;
 using UnityEngine.Networking;
 using TMPro;
@@ -36,6 +37,9 @@ public class OllamaNPC : MonoBehaviour
     private bool cevapBekleniyor;
     private Coroutine aktifCevapCoroutine;
 
+    // Ikna surecinde oyuncunun istedigi destek eylemini saklar.
+    private string bekleyenDestekEylemi;
+
     private readonly List<MesajVerisi> konusmaGecmisi =
         new List<MesajVerisi>();
 
@@ -50,13 +54,20 @@ DIYALOG TUTARLILIGI:
 - Oyuncunun mesajina dogrudan cevap ver.
 - Genellikle bir veya iki kisa cumle kullan.
 - Gereksiz tekrar yapma.
-- Oyuncunun ne istedigini anladiginda gereksiz aciklama isteme.
-- Oyuncu acik bir oyun eylemi istediginde onay sorusu sorma.
 - Oyuncunun onceki konusmalarini dikkate al.
 - Oyuncuyla samimi, anlasilir ve tutarli bir diyalog kur.
-- Normal sohbetlerde yeni bir oyun eylemi isteme.
-- Onceki konusmada onay bekleyen acik bir soru yoksa oyuncunun
-  Evet veya Tamam demesiyle ayni eylemi tekrar baslatma.
+- HEAL, MAX_HEAL ve BOOST_DAMAGE desteklerini dogrudan uygulama.
+  Oyuncu bu desteklerden birini istediginde once neden yardim etmen
+  gerektigini sor ve action NONE, persuasionStatus PENDING dondur.
+- Ikna devam ederken oyuncunun gerekcesini konusma gecmisiyle birlikte
+  degerlendir. Yeterli bulursan yalnizca istenen destek eylemini
+  action olarak dondur ve persuasionStatus ACCEPTED yap.
+- Ikna yetersizse action NONE ve persuasionStatus PENDING dondur.
+- Yardim etmeyi reddediyorsan action NONE ve persuasionStatus REJECTED dondur.
+- Ikna beklenmiyorken oyuncunun Evet veya Tamam demesiyle oyun eylemi baslatma.
+- Oyuncu ikna konusmasini birakip baska konuya gecerse yeni mesaji normal
+  sekilde degerlendir; eski destek talebini kendiliginden uygulama.
+- Normal sohbetlerde yeni bir oyun eylemi baslatma.
 
 ";
 
@@ -1052,6 +1063,102 @@ Yeni bir oyun eylemi uretme.
         }
     }
 
+
+    private string DestekEyleminiBelirle(string metin)
+    {
+        string normal = MetniNormalizeEt(metin);
+
+        if (string.IsNullOrWhiteSpace(normal))
+            return null;
+
+        // MAX_HEAL
+        if (normal.Contains("maksimum can") ||
+            normal.Contains("max can") ||
+            normal.Contains("can kapasitesi") ||
+            normal.Contains("canimi artir") ||
+            normal.Contains("canimi yukselt") ||
+            normal.Contains("maksimum hp") ||
+            normal.Contains("max hp") ||
+            normal.Contains("1500 hp") ||
+            normal.Contains("1500 can"))
+        {
+            return "MAX_HEAL";
+        }
+
+        // BOOST_DAMAGE
+        if (normal.Contains("lazerimi guclendir") ||
+            normal.Contains("lazerimi gelistir") ||
+            normal.Contains("lazer gucunu artir") ||
+            normal.Contains("lazer hasarini artir") ||
+            normal.Contains("lazer hasarini yukselt") ||
+            normal.Contains("silahimi guclendir") ||
+            normal.Contains("silahimi gelistir") ||
+            normal.Contains("silah hasarini artir") ||
+            normal.Contains("hasarimi artir") ||
+            normal.Contains("hasarimi yukselt") ||
+            normal.Contains("daha fazla hasar") ||
+            normal.Contains("boost damage"))
+        {
+            return "BOOST_DAMAGE";
+        }
+
+        // HEAL
+        if (normal.Contains("iyilestir") ||
+            normal.Contains("canimi doldur") ||
+            normal.Contains("can bas") ||
+            normal.Contains("canimi yenile") ||
+            normal.Contains("canimi tamamla") ||
+            normal.Contains("gemimi tamir") ||
+            normal.Contains("gemiyi tamir") ||
+            normal.Contains("heal"))
+        {
+            return "HEAL";
+        }
+
+        return null;
+    }
+
+
+    private string IknaIcinBeklenenEylemiBul(string mevcutOyuncuMesaji)
+    {
+        if (!string.IsNullOrEmpty(bekleyenDestekEylemi))
+            return bekleyenDestekEylemi;
+
+        for (int i = konusmaGecmisi.Count - 1; i >= 0; i--)
+        {
+            MesajVerisi mesaj = konusmaGecmisi[i];
+
+            if (mesaj == null)
+                continue;
+
+            if (mesaj.role == "assistant")
+            {
+                NPCYanit onceki;
+
+                try
+                {
+                    onceki = JsonUtility.FromJson<NPCYanit>(mesaj.content);
+                }
+                catch
+                {
+                    return null;
+                }
+
+                if (onceki == null || onceki.persuasionStatus != "PENDING")
+                    return null;
+            }
+            else if (mesaj.role == "user")
+            {
+                string bulunan = DestekEyleminiBelirle(mesaj.content);
+
+                if (!string.IsNullOrEmpty(bulunan))
+                    return bulunan;
+            }
+        }
+
+        return DestekEyleminiBelirle(mevcutOyuncuMesaji);
+    }
+
     private bool OncekiIknaBekliyorMu()
     {
         for (int i = konusmaGecmisi.Count - 1; i >= 0; i--)
@@ -1266,35 +1373,53 @@ Yeni bir oyun eylemi uretme.
             npcYanit.action == "MAX_HEAL" ||
             npcYanit.action == "BOOST_DAMAGE";
 
+        bool oncekiIknaBekliyor = OncekiIknaBekliyorMu();
+
         switch (npcYanit.persuasionStatus)
         {
             case "NONE":
-                if (izinliOyunEylemi && !OncekiIknaBekliyorMu())
-                {
-                    Debug.LogWarning(
-                        "NPC acik eylem talebinde izinli bir action secti ancak NONE dondurdu. DIRECT olarak duzeltiliyor."
-                    );
-
-                    npcYanit.persuasionStatus = "DIRECT";
-                }
-                else if (npcYanit.action != "NONE" &&
-                         npcYanit.action != "BOSS_HINT")
+                if (npcYanit.action != "NONE" &&
+                    npcYanit.action != "BOSS_HINT")
                 {
                     npcYanit = null;
                     return false;
                 }
                 break;
 
-            case "DIRECT":
             case "ACCEPTED":
-                if (!izinliOyunEylemi)
                 {
-                    npcYanit = null;
-                    return false;
+                    if (!oncekiIknaBekliyor || !izinliOyunEylemi)
+                    {
+                        npcYanit = null;
+                        return false;
+                    }
+
+                    string beklenenEylem =
+                        IknaIcinBeklenenEylemiBul(null);
+
+                    if (!string.IsNullOrEmpty(beklenenEylem) &&
+                        npcYanit.action != beklenenEylem)
+                    {
+                        Debug.LogWarning(
+                            "NPC, oyuncunun istedigi destekten farkli bir eylemi onaylamaya calisti. Beklenen: "
+                            + beklenenEylem + " | Gelen: " + npcYanit.action
+                        );
+
+                        npcYanit = null;
+                        return false;
+                    }
+
+                    break;
                 }
-                break;
 
             case "PENDING":
+                if (npcYanit.action != "NONE")
+                {
+                    npcYanit = null;
+                    return false;
+                }
+                break;
+
             case "REJECTED":
                 if (npcYanit.action != "NONE")
                 {
@@ -1334,6 +1459,18 @@ Yeni bir oyun eylemi uretme.
         string oyuncuMesaji,
         NPCYanit npcYanit)
     {
+        if (npcYanit.persuasionStatus == "PENDING")
+        {
+            if (string.IsNullOrEmpty(bekleyenDestekEylemi))
+                bekleyenDestekEylemi = DestekEyleminiBelirle(oyuncuMesaji);
+        }
+        else if (npcYanit.persuasionStatus == "ACCEPTED" ||
+                 npcYanit.persuasionStatus == "REJECTED" ||
+                 npcYanit.persuasionStatus == "NONE")
+        {
+            bekleyenDestekEylemi = null;
+        }
+
         if (npcCevapMetni != null)
         {
             npcCevapMetni.text = npcYanit.response;
