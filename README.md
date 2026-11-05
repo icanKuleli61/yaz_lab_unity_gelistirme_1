@@ -98,7 +98,7 @@ Sistemde kullanılan temel scriptler ve görevleri aşağıda açıklanmıştır
 | `BotYardimMesajiKontrol.cs` | Oyuncu gemisi Companion'a yaklaştığında yardım mesajını gösterir. |
 | `BotYardimPanelKontrol.cs` | Yardım panelindeki EVET ve HAYIR butonlarının işlemlerini yönetir. |
 | `CompanionFollow.cs` | Companion'ın gemiyi takip etme davranışını içeren yardımcı script'tir. |
-| `CompanionMission.cs` | NavMesh hareketini, görev hedeflerini ve FSM durumlarını yönetir. |
+| `CompanionMission.cs` | NavMesh hareketini, hedefleri ve FSM durumlarını yönetir. |
 | `SalterKontrol.cs` | Şalteri etkinleştirir, görsel durumunu günceller ve portal enerji kalkanını devre dışı bırakır. |
 
 Görev yönetiminde temel sorumluluk `CompanionMission.cs` içerisindedir. Bu script, `CompanionFollow` bileşenini başlangıçta devre dışı bırakarak takip davranışını kendi `FollowShip` durumu üzerinden yürütür.
@@ -308,10 +308,27 @@ Gerçekleştirilen testlerin sonuçları aşağıdaki tabloda gösterilmiştir:
 Başarı oranı aşağıdaki formülle hesaplanmıştır:
 
 \[
-Başarı\ Oranı = \frac{Başarılı\ Test\ Sayısı}{Toplam\ Test\ Sayısı}\times 100
+\text{Başarı Oranı} =
+\frac{\text{Başarılı Test Sayısı}}{\text{Toplam Test Sayısı}}
+\times 100
 \]
 
-Ortalama görev tamamlama süresi ise gerçekleştirilen dört testin sürelerinin aritmetik ortalaması alınarak hesaplanmıştır.
+Gerçekleştirilen testlere göre başarı oranı:
+
+\[
+\frac{4}{4} \times 100 = 100\%
+\]
+
+Ortalama görev tamamlama süresi, dört testte elde edilen sürelerin aritmetik ortalaması alınarak hesaplanmıştır:
+
+\[
+\text{Ortalama Süre} =
+\frac{34{,}11 + 8{,}37 + 27{,}68 + 37{,}20}{4}
+\]
+
+\[
+\text{Ortalama Süre} = 26{,}84 \text{ saniye}
+\]
 
 **Test 1. Varsayılan başlangıç konumu**
 
@@ -331,16 +348,13 @@ Ortalama görev tamamlama süresi ise gerçekleştirilen dört testin sürelerin
 
 Gerçekleştirilen testlerde Companion, belirtilen dört farklı başlangıç koşulunda görevini başarıyla tamamlamıştır. Ölçülen süreler, görev başlangıcından Companion'ın oyuncu gemisinin yanındaki hedefe geri ulaşmasına kadar geçen süreyi ifade etmektedir.
 
-### 2.9. Sensör Tabanlı Gözlem Mekanizması ve Geliştirme Gereksinimi
+### 2.9. Sensör Tabanlı Gözlem Mekanizması
 
 Proje isterlerinde otonom kahramanın kendi konumunu ve engellere olan mesafesini/açısını algılayabilmesi için sensör tabanlı bir gözlem mekanizması (ör. Raycast) kullanılması istenmektedir.
 
 Mevcut sistemde `BotTiklamaKontrol.cs` içerisinde kullanılan Raycast, oyuncunun fareyle Companion nesnesine tıklamasını algılamak amacıyla kullanılmaktadır. Bu işlem, Companion'ın çevresindeki engelleri algılayan bir sensör mekanizması değildir.
 
-Bu nedenle Companion'ın çevresini algılayarak engellere ilişkin mesafe ve yön bilgisi elde etmesini sağlayacak ayrı bir sensör mekanizması mevcut sistemin tamamlanması gereken geliştirme adımlarından biridir.
-
-Bu mekanizmanın eklenmesiyle NavMesh tabanlı yol bulma sisteminin çevresel gözlem yeteneğiyle desteklenmesi hedeflenmektedir.
-
+Bu nedenle Companion'ın çevresini algılayarak engellere ilişkin mesafe ve yön bilgisi elde etmesini sağlayacak ayrı bir sensör mekanizmasının eklenmesi gerekmektedir. Bu geliştirme tamamlandığında sensörün çalışma prensibi ve elde ettiği gözlem verileri bu bölümde açıklanacaktır.
 
 # 3. Yerel LLM Destekli NPC Entegrasyonu
 
