@@ -14,7 +14,6 @@
 **Programlama Dili:** C#
 
 ---
-
 # Projenin İndirilmesi, Kurulumu ve Çalıştırılması
 Bu bölümde projenin bilgisayara indirilmesi, gerekli yazılımların kurulması ve oyunun çalıştırılması için izlenmesi gereken adımlar açıklanmaktadır.
 
@@ -22,15 +21,10 @@ Bu bölümde projenin bilgisayara indirilmesi, gerekli yazılımların kurulmas�
 Projeyi çalıştırabilmek için aşağıdaki yazılımların bilgisayarda kurulu olması gerekmektedir:
 
 | Yazılım | Sürüm / Açıklama |
-
 |---|---|
-
 | Unity Hub | Unity projelerini yönetmek için |
-
 | Unity Editor | 6.5 (6000.5.2f1) |
-
 | Ollama | Yerel LLM sunucusu |
-
 | Qwen3 | 4B modeli (`qwen3:4b`) |
 
 ## Gerekli Yazılımların Kurulması
@@ -154,7 +148,6 @@ Oyuncunun gerekli yardımları alamaması veya boss karşısında başarısız o
 ![Devolarium boss mücadelesi](docs/images/devolarium-boss.png)
 
 ---
-
 # 2. Otonom AI Companion Sistemi
 Bu bölümde, oyunun ilk aşamasında oyuncuya eşlik eden otonom AI Companion sisteminin mimarisi, NavMesh tabanlı hareket mekanizması, karar verme yapısı ve görev tamamlama süreci açıklanmaktadır.
 
@@ -166,19 +159,12 @@ Companion sistemi, farklı sorumluluklara sahip C# scriptleri kullanılarak geli
 Sistemde kullanılan temel scriptler ve görevleri aşağıda açıklanmıştır.
 
 | Script | Görevi |
-
 |---|---|
-
 | `BotTiklamaKontrol.cs` | Oyuncunun Companion üzerine tıklamasını kontrol eder ve yardım panelini açar. |
-
 | `BotYardimMesajiKontrol.cs` | Oyuncu gemisi Companion'a yaklaştığında yardım mesajını gösterir. |
-
 | `BotYardimPanelKontrol.cs` | Yardım panelindeki EVET ve HAYIR butonlarının işlemlerini yönetir. |
-
 | `CompanionFollow.cs` | Companion'ın gemiyi takip etme davranışını içeren yardımcı script'tir. |
-
 | `CompanionMission.cs` | NavMesh hareketini, hedefleri ve FSM durumlarını yönetir. |
-
 | `SalterKontrol.cs` | Şalteri etkinleştirir, görsel durumunu günceller ve portal enerji kalkanını devre dışı bırakır. |
 
 Görev yönetiminde temel sorumluluk `CompanionMission.cs` içerisindedir. Bu script, `CompanionFollow` bileşenini başlangıçta devre dışı bırakarak takip davranışını kendi `FollowShip` durumu üzerinden yürütür.
@@ -191,25 +177,15 @@ NavMesh, oyun ortamında karakterin hareket edebileceği yüzeyleri tanımlar. N
 Companion üzerinde kullanılan temel NavMesh Agent ayarları şöyledir:
 
 | Parametre | Değer |
-
 |---|---:|
-
 | Agent Type | Humanoid |
-
 | Speed | 11 |
-
 | Angular Speed | 120 |
-
 | Acceleration | 8 |
-
 | Auto Braking | Açık |
-
 | Obstacle Avoidance Quality | High Quality |
-
 | Obstacle Avoidance Radius | 0.907 |
-
 | Obstacle Avoidance Priority | 50 |
-
 | Auto Repath | Açık |
 
 Companion görevi başlatıldığında öncelikle `NavMeshAgent` bileşeninin etkin olup olmadığı kontrol edilir. `NavMesh.SamplePosition()` metodu ile Companion'ın yakınında uygun bir NavMesh noktası aranır. Ardından `agent.Warp()` kullanılarak karakterin geçerli NavMesh konumunda bulunması sağlanır.
@@ -232,19 +208,12 @@ Mayın prefablarına `NavMesh Obstacle` bileşeni eklenmiştir. Bu bileşen, may
 Mayınlarda kullanılan temel ayarlar şöyledir:
 
 | Parametre | Değer |
-
 |---|---|
-
 | Shape | Box |
-
 | Size | X: 1.898, Y: 1.9, Z: 1.794 |
-
 | Carve | Açık |
-
 | Move Threshold | 0.1 |
-
 | Time To Stationary | 0.5 |
-
 | Carve Only Stationary | Açık |
 
 `Carve` özelliği, engelin bulunduğu bölgede NavMesh üzerinde geçilemeyen bir alan oluşturulmasını sağlar. `Carve Only Stationary` seçeneği açık olduğundan, bu işlem engel hareketsiz durumdayken uygulanır.
@@ -282,7 +251,7 @@ Durum geçişleri aşağıdaki diyagramda gösterilmiştir:
 
 stateDiagram-v2
 
-    [\*] --> FollowShip
+    [*] --> FollowShip
 
     FollowShip --> GoingToSwitch: Oyuncu EVET der ve geçerli yol bulunur
 
@@ -476,15 +445,10 @@ Tehdit, hakaret, emir ve yalnızca ısrar etmek ikna için yeterli değildir.
 **İzin verilen ikna durumları:**
 
 | Durum | Açıklama |
-
 |---|---|
-
 | NONE | Aktif ikna süreci yoktur. |
-
 | PENDING | Oyuncudan gerekçe beklenir. |
-
 | ACCEPTED | Destek talebi kabul edilmiştir. |
-
 | REJECTED | Destek talebi reddedilmiştir. |
 
 NPC System Prompt - Tam Metin
@@ -734,13 +698,9 @@ LLM'nin doğal dilde verdiği cevapların doğrudan oyun eylemine dönüştürü
 JSON üç alandan oluşmaktadır:
 
 | Alan | Görevi |
-
 |---|---|
-
 | action | Gerçekleştirilmesi istenen oyun eylemi |
-
 | response | NPC'nin oyuncuya göstereceği cevap |
-
 | persuasionStatus | İkna sürecinin durumu |
 
 ### JSON Örneği
@@ -760,30 +720,19 @@ JSON üç alandan oluşmaktadır:
 
 ### İzin Verilen Eylemler
 | Eylem | Açıklama |
-
 |---|---|
-
 | `HEAL` | Geminin mevcut canını maksimum cana tamamlar. |
-
 | `MAX_HEAL` | Geminin mevcut ve maksimum canını 1500 HP yapar. |
-
 | `BOOST_DAMAGE` | Her lazerin hasarını 100 HP yapar. |
-
 | `BOSS_HINT` | Boss hakkında bilgi verir. |
-
 | `NONE` | Herhangi bir oyun eylemi gerçekleştirmez. |
 
 ### İkna Durumu ve Eylem Eşleşmeleri
 | İkna durumu | İzin verilen eylem |
-
 |---|---|
-
 | `NONE` | `NONE`, `BOSS_HINT` |
-
 | `PENDING` | `NONE` |
-
 | `ACCEPTED` | `HEAL`, `MAX_HEAL`, `BOOST_DAMAGE` |
-
 | `REJECTED` | `NONE` |
 
 Model yanıtı NPCYanit.cs dosyasındaki sınıf aracılığıyla C# nesnesine dönüştürülür.
@@ -1047,21 +996,14 @@ Son kontrolde Qwen3:4b modeli yeniden çalıştırılmış ve Unity üzerinden N
 
 ### Hata Testlerinin Genel Sonuçları
 | Test | Gerçekleşen sonuç | Durum |
-
 |---|---|---|
-
 | Ollama bağlantısına ulaşılamaması | Bağlantı hatası yakalandı ve oyuncuya bilgi verildi. | Başarılı |
-
 | Zaman aşımı | Timeout hatası yakalandı ve oyuncuya bilgi verildi. | Başarılı |
-
 | Modelin bulunamaması | Hata sınıflandırması düzeltildikten sonra özel hata mesajı gösterildi. | Başarılı |
-
 | Bağlantının yeniden kurulması | Qwen3:4b yeniden başlatıldı ve NPC normal cevap verdi. | Başarılı |
 
 # 5. Uygulamaya Ait Ekran Görüntüleri, Test Senaryoları ve Sonuçlar
-
 ## 5.1. Otonom AI Companion Testleri
-
 Otonom Companion sisteminin değerlendirilmesi amacıyla farklı başlangıç konumlarında görev tamamlama testleri gerçekleştirilmiştir.
 
 Testlerde Companion'ın farklı konumlardan şaltere ulaşabilmesi, mayınların yakınında hareket edebilmesi, portal çevresinden görev yapabilmesi ve uzun mesafeden görevini tamamlayarak oyuncunun yanına dönebilmesi incelenmiştir.
@@ -1069,15 +1011,10 @@ Testlerde Companion'ın farklı konumlardan şaltere ulaşabilmesi, mayınların
 Gerçekleştirilen testlerin sonuçları aşağıdaki tabloda gösterilmiştir:
 
 | Test | Başlangıç koşulu | Sonuç | Görev tamamlama süresi |
-
 |---|---|---|---:|
-
 | 1 | Oyunun varsayılan başlangıç konumu | Başarılı | 34,11 saniye |
-
 | 2 | Mayınların yakını | Başarılı | 8,37 saniye |
-
 | 3 | Portal kapısının yakını | Başarılı | 27,68 saniye |
-
 | 4 | Haritanın en uzak köşesi | Başarılı | 37,20 saniye |
 
 **Test sonuçlarının özeti:**
@@ -1292,21 +1229,13 @@ Sonuç: Başarılı. NPC oyun dışı bilgileri uydurmamış ve kendi rolünü k
 <img width="1155" height="846" alt="Ekran görüntüsü 2026-11-05 185435" src="https://github.com/user-attachments/assets/e367f9e8-f6ae-454e-9e29-c215ba95a535" />
 
 ### 5.2.1. Genel Test Sonuçları
-
 | Diyalog Testi | Sonuç |
-
 |---|---|
-
 | Silah yükseltme için ikna | Başarılı |
-
 | Maksimum can yükseltme | Başarılı |
-
 | Boss hakkında bilgi | Başarılı |
-
 | Israr ve emir verme | Başarılı |
-
 | Hakaret | Başarılı |
-
 | Alakasız konuşma | Başarılı |
 
 # 6. Sonuç ve Tartışma
