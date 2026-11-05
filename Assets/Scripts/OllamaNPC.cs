@@ -442,6 +442,17 @@ Yeni bir oyun eylemi uretme.
             sonCevap.response = duzeltilmisMetin;
         }
 
+        if (karar.action == "MAX_HEAL" &&
+            unitySonucu.success &&
+            unitySonucu.reasonCode == "MAX_HP_UPGRADED")
+        {
+            sonCevap.response =
+                IslemSonucunaGoreVarsayilanCevap(
+                    karar.action,
+                    unitySonucu
+                );
+        }
+
         karar.response = sonCevap.response;
 
         CevabiGosterVeKaydet(oyuncuMesaji, karar);
