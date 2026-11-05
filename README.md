@@ -62,9 +62,7 @@ Tehdit, hakaret, emir ve yalnızca ısrar etmek ikna için yeterli değildir.
 | ACCEPTED | Destek talebi kabul edilmiştir. |
 | REJECTED | Destek talebi reddedilmiştir. |
 
-
-<details>
-<summary>NPC System Prompt - Tam Metin</summary>
+NPC System Prompt - Tam Metin
 public static class NPCSystemPrompt
 {
     public const string Prompt = @"
@@ -225,7 +223,6 @@ JSON tam olarak şu yapıda olmalıdır:
 }
 ";
 }
-```csharp
 
 
 
