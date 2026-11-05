@@ -1,4 +1,3 @@
-
 using UnityEngine;
 using UnityEngine.Networking;
 using TMPro;
@@ -615,7 +614,9 @@ Yeni bir oyun eylemi uretme.
                 else if (
                     birlesikHata.Contains("model not found") ||
                     birlesikHata.Contains("model does not exist") ||
-                    birlesikHata.Contains("pull model"))
+                    birlesikHata.Contains("pull model") ||
+                    (birlesikHata.Contains("model") &&
+                     birlesikHata.Contains("not found")))
                 {
                     kullaniciMesaji =
                         "Istenen yerel model bulunamadi. Ollama model kurulumunu kontrol et.";

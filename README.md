@@ -1,3 +1,86 @@
+# YazLab Unity Projesi – Yapay Zekâ Destekli Uzay Macerası
+
+**Ders:** Yazılım Geliştirme Laboratuvarı-I  
+**Üniversite:** Kocaeli Üniversitesi – Teknoloji Fakültesi  
+**Bölüm:** Bilişim Sistemleri Mühendisliği  
+**Proje Ekibi:** [1. Ekip üyesi] – [2. Ekip üyesi]  
+**Tarih:** 06.11.2026  
+**Oyun Motoru:** Unity 6  
+**Programlama Dili:** C#
+
+---
+
+# 1. Problemin Tanımı, Projenin Amacı ve Genel Oyun Senaryosu
+
+## 1.1. Problemin Tanımı
+
+Bu projede, oyun ortamında karşılaşılan fiziksel engellerin otonom bir yapay zekâ karakteri tarafından aşılması ve oyuncunun doğal dil üzerinden iletişim kurduğu bir NPC ile etkileşime girerek oyun içerisindeki problemleri çözmesi ele alınmaktadır.
+
+İlk problem, oyuncunun kontrol ettiği uzay gemisinin mayınlarla çevrili bir bölgeden güvenli şekilde geçememesidir. Oyuncunun hedefe kendi başına ulaşamaması nedeniyle çevresel engelleri aşabilen ve belirlenen hedefe otonom olarak ilerleyebilen bir AI Companion sistemine ihtiyaç duyulmaktadır.
+
+İkinci problem ise oyuncunun oyun içerisinde ihtiyaç duyduğu yardımları doğal dil kullanarak talep edebilmesi ve bu taleplerin değerlendirilmesidir. Oyuncunun karşılaştığı boss düşmanını yenebilmesi için can ve saldırı gücü bakımından desteğe ihtiyacı bulunmaktadır. Bu nedenle oyuncunun mesajlarını anlayabilen, gerekçelerini değerlendirebilen ve ikna sürecinin sonucuna göre oyun durumunu değiştirebilen yerel LLM destekli bir NPC geliştirilmiştir.
+
+## 1.2. Projenin Amacı
+
+Projenin temel amacı, otonom yapay zekâ ve yerel Büyük Dil Modeli teknolojilerini Unity tabanlı bir oyun içerisinde bütünleştirmektir.
+
+Bu kapsamda iki farklı yapay zekâ bileşeni geliştirilmiştir:
+
+- **Otonom AI Companion:** Oyuncunun aşamadığı mayınlı bölgeden geçerek uzay istasyonuna ulaşan ve portalın açılmasına yardımcı olan yapay zekâ karakteridir.
+- **Yerel LLM Destekli NPC:** Oyuncuyla doğal dil üzerinden iletişim kuran, oyuncunun taleplerini değerlendiren ve ikna sürecine göre oyun içi eylemleri gerçekleştiren yapay zekâ karakteridir.
+
+Proje ile yapay zekâ sistemlerinin yalnızca karakter hareketi veya metin üretimi için değil, oyuncunun oyun içerisindeki ilerlemesini doğrudan etkileyen karar ve eylemlerin gerçekleştirilmesi için de kullanılabileceği gösterilmektedir.
+
+## 1.3. Genel Oyun Senaryosu
+
+Oyun, uzay boşluğunda geçen ve birbirine bağlı iki bölümden oluşan bir macera senaryosuna sahiptir. Oyuncu ilk bölümde AI Companion yardımıyla fiziksel engeli aşmakta, ikinci bölümde ise yerel LLM destekli NPC ile etkileşime girerek son görevini tamamlamaya çalışmaktadır.
+
+### 1.3.1. Birinci Bölüm – Mayınlı Alan ve AI Companion
+
+Oyuncu ilk bölümde uzay gemisiyle oyun alanına başlar. İkinci bölüme geçişi sağlayan portalın çevresi bir enerji kalkanıyla kapalıdır. Bu kalkanın kaldırılması için büyük uzay istasyonunda bulunan şalterin açılması gerekmektedir.
+
+Ancak uzay istasyonunun çevresi mayınlarla kaplıdır. Oyuncu kendi gemisiyle istasyona ulaşmaya çalıştığında mayınlara çarparak gemisini kaybetmektedir. Bu nedenle oyuncu, oyun alanında bulunan AI Companion karakterinden yardım ister.
+
+Oyuncu Companion karakterine tıklayarak etkileşim penceresini açar ve yardım talebini iletir. Companion, belirlenen hedefe doğru otonom hareket ederek mayınlı bölgeden geçer ve uzay istasyonuna ulaşır. İstasyondaki şalterin açılmasıyla portalın çevresindeki enerji kalkanı kaldırılır. Böylece oyuncu portala ulaşarak ikinci bölüme geçebilir.
+
+**Şekil 1.** Oyuncunun AI Companion karakterinden yardım istemesi.
+
+![AI Companion yardım ekranı](docs/images/companion-yardim.png)
+
+**Şekil 2.** Birinci bölümde portalın enerji kalkanıyla kapalı olması.
+
+![Portal enerji kalkanı](docs/images/portal-kalkan.png)
+
+### 1.3.2. İkinci Bölüm – Yerel LLM Destekli NPC ve Devolarium Bossu
+
+Oyunun ikinci bölümünde oyuncunun amacı Devolarium bossunu yenerek oyunu başarıyla tamamlamaktır. Ancak oyuncunun başlangıçtaki can ve lazer hasarı değerleri bossu yenmek için yeterli değildir. Bu nedenle oyuncunun oyun alanında bulunan yerel LLM destekli NPC'den yardım alması gerekmektedir.
+
+Oyuncu gemisiyle NPC'nin bulunduğu konuma gider ve karaktere tıklayarak konuşma penceresini açar. Açılan arayüz üzerinden NPC'ye serbest metin biçiminde mesajlar gönderir. Oyuncu, ihtiyaç duyduğu yardımı ve bu yardıma neden gereksinim duyduğunu kendi ifadeleriyle açıklar.
+
+NPC, oyuncudan gelen mesajları yerel dil modeli aracılığıyla değerlendirir ve konuşmanın bağlamına uygun yanıtlar üretir. Oyuncunun sunduğu gerekçelerin değerlendirilmesi sonucunda NPC ikna olabilir veya talebi kabul etmeyebilir.
+
+NPC'nin oyuncuya sağlayabileceği yardımlar şunlardır:
+
+- **HEAL:** Oyuncunun mevcut canının yenilenmesi.
+- **MAX_HEAL:** Oyuncunun mevcut ve maksimum can değerinin 1500'e yükseltilmesi.
+- **BOOST_DAMAGE:** Oyuncunun lazer hasarının 30'dan 100'e yükseltilmesi.
+- **BOSS_HINT:** Devolarium bossu hakkında oyuncuya bilgi verilmesi.
+
+Oyuncu gerekli yardımları aldıktan sonra Devolarium bossunun bulunduğu bölgeye ilerler. Bossu yenmesiyle bulunduğu bölgedeki portal aktif hâle gelir. Oyuncunun aktif portala tıklamasıyla oyun başarıyla tamamlanır.
+
+Oyuncunun gerekli yardımları alamaması veya boss karşısında başarısız olması durumunda oyun sona erer.
+
+**Şekil 3.** Oyuncunun yerel LLM destekli NPC ile metin tabanlı etkileşimi.
+
+![NPC konuşma arayüzü](docs/images/npc-konusma.png)
+
+**Şekil 4.** İkinci bölümde Devolarium boss mücadelesi.
+
+![Devolarium boss mücadelesi](docs/images/devolarium-boss.png)
+
+---
+
+
 # 3. Yerel LLM Destekli NPC Entegrasyonu
 
 Projede oyuncunun serbest metin kullanarak iletişim kurabildiği yerel LLM destekli bir NPC geliştirilmiştir. NPC, oyuncunun mesajlarını analiz ederek oyun senaryosuna uygun cevaplar üretir ve belirli durumlarda Unity tarafında oyun eylemlerinin gerçekleştirilmesini sağlar.
