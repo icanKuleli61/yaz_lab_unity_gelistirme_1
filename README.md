@@ -63,8 +63,10 @@ Tehdit, hakaret, emir ve yalnızca ısrar etmek ikna için yeterli değildir.
 | REJECTED | Destek talebi reddedilmiştir. |
 
 
-NPC System Prompt - Tam Metin
+<details>
+<summary>NPC System Prompt - Tam Metin</summary>
 
+```csharp
 public static class NPCSystemPrompt
 {
     public const string Prompt = @"
@@ -227,6 +229,18 @@ JSON tam olarak şu yapıda olmalıdır:
 }
 
 
+### Ek Diyalog Talimatları
+
+Ana System Prompt'a ek olarak `OllamaNPC.cs` içerisinde iki ayrı talimat metni kullanılmaktadır:
+
+- `DiyalogTutarlilikKurallari`: Oyuncunun önceki mesajlarının dikkate alınmasını, destek taleplerinde ikna sürecinin korunmasını ve normal sohbetlerde gereksiz oyun eylemi başlatılmamasını sağlar.
+- `EylemSonrasiCevapKurallari`: Unity tarafında bir eylem gerçekleştirildikten sonra gerçek işlem sonucunun oyuncuya doğru aktarılmasını sağlar.
+
+İlk Ollama isteğinde ana System Prompt ve diyalog tutarlılık kuralları birlikte gönderilir. Destek eylemi gerçekleştirildikten sonra yapılan ikinci istekte ise işlem sonrası cevap kuralları ve Unity tarafından oluşturulan gerçek işlem sonucu da modele iletilir.
+
+Bu sayede NPC'nin oyuncuya verdiği son cevap, yalnızca modelin tahminine değil, Unity tarafından doğrulanan işlem sonucuna dayanır.
+
+
 ## 3.3. Yapılandırılmış JSON Çıktı Sistemi
 
 LLM'nin doğal dilde verdiği cevapların doğrudan oyun eylemine dönüştürülmesi yerine yapılandırılmış JSON çıktısı kullanılmıştır. Böylece NPC'nin oyuncuya verdiği cevap ile Unity'de gerçekleştirilecek işlem birbirinden ayrılır.
@@ -318,40 +332,107 @@ sequenceDiagram
     end
 ```
 
-Mermaid Sequence Diyagramı
-<img width="3476" height="2386" alt="mermaid-diagram" src="https://github.com/user-attachments/assets/c0aaa221-03eb-4d91-ab53-1e33dd136890" />
 
 # 4. Hata Yönetimi ve Kararlılık
-LLM bağlantısında oluşabilecek hataların oyunun çalışmasını engellememesi için çeşitli kontroller geliştirilmiştir.
 
-Kullanılan yöntemler:
-- UnityWebRequest ile HTTP istekleri gönderilir.
-- Coroutine kullanılarak istekler ana oyun akışını senkron biçimde bekletmeden yürütülür.
-- Zaman aşımı 60 saniye olarak tanımlanmıştır.
-- Bağlantı hataları yakalanır ve oyuncuya mesaj gösterilir.
-- Modelin bulunamaması kontrol edilir.
-- Boş veya geçersiz JSON yanıtları oyun eylemine dönüştürülmez.
-- Geçersiz ilk karar JSON'u için bir yeniden deneme yapılır.
-- Eylem işlemleri try-catch ile korunur.
-Oyuncuya bekleme sırasında NPC dusunuyor..., Islem kontrol ediliyor... ve NPC islem sonucunu degerlendiriyor... mesajları gösterilir.
+Yerel LLM entegrasyonunda oluşabilecek bağlantı, model ve yanıt kaynaklı hataların oyunun çalışmasını engellememesi için çeşitli kontrol mekanizmaları geliştirilmiştir. Hata durumlarında oyuncuya bilgilendirici mesajlar gösterilerek oyunun çalışmaya devam etmesi amaçlanmıştır.
 
-Yeniden deneme mekanizması JSON ayrıştırma hatası için uygulanmıştır. Bağlantı ve zaman aşımı hatalarında otomatik tekrar gönderim yapılmamaktadır.
+### Kullanılan Hata Yönetimi Yöntemleri
+
+- Ollama ile iletişim `UnityWebRequest` kullanılarak HTTP üzerinden gerçekleştirilir.
+- Coroutine kullanılarak LLM istekleri ana oyun akışını senkron biçimde bekletmeden yürütülür.
+- Normal çalışma için zaman aşımı süresi 60 saniye olarak belirlenmiştir.
+- Bağlantı ve API hataları kontrol edilerek oyuncuya uygun hata mesajları gösterilir.
+- İstenen modelin Ollama üzerinde bulunup bulunmadığı kontrol edilir.
+- Boş veya geçersiz JSON yanıtlarının oyun eylemine dönüşmesi engellenir.
+- İlk JSON ayrıştırma işlemi başarısız olursa modelden bir kez daha geçerli JSON yanıtı istenir.
+- Eylem işlemleri sırasında oluşabilecek beklenmeyen hatalar `try-catch` yapısıyla yakalanır.
+
+### Bekleme Sırasında Kullanıcıya Geri Bildirim
+
+Modelin yanıt üretmesi sırasında oyuncunun sistemin çalıştığını anlayabilmesi için arayüzde durum mesajları gösterilir.
+
+Kullanılan geri bildirimler:
+
+- `NPC düşünüyor...`
+- `İşlem kontrol ediliyor...`
+- `NPC işlem sonucunu değerlendiriyor...`
+
+JSON yanıtının geçersiz olması durumunda yeniden deneme mekanizması uygulanır. Bağlantı ve zaman aşımı hatalarında ise otomatik yeniden istek gönderilmez; oyuncuya hata mesajı gösterilir.
+
 ## 4.1. Hata Testleri
 
-LLM entegrasyonunun farklı hata koşullarındaki davranışını değerlendirmek amacıyla Unity üzerinde bağlantı, zaman aşımı ve model erişimi testleri gerçekleştirilmiştir.
+LLM entegrasyonunun farklı hata koşullarındaki davranışını değerlendirmek amacıyla Unity üzerinde bağlantı, zaman aşımı, model erişimi ve bağlantının yeniden kurulması testleri gerçekleştirilmiştir.
 
-| Test | Gerçekleşen Sonuç | Durum |
-|---|---|---|
-| Ollama sunucusunun kapatılması | Bağlantı hatası yakalanmış ve oyuncuya Ollama sunucusunu kontrol etmesini belirten mesaj gösterilmiştir. Oyun çökmemiştir. | Başarılı |
-| Zaman aşımı | Zaman aşımı değeri geçici olarak 1 saniyeye düşürülmüş, istek süresi dolduğunda timeout hatası yakalanmıştır. Oyuncuya bilgilendirme mesajı gösterilmiştir. | Başarılı |
-| Modelin bulunamaması | Geçici ve mevcut olmayan bir model adı kullanılarak HTTP 404 hatası oluşturulmuştur. Hata kontrolü düzeltildikten sonra modelin bulunamadığını belirten özel mesaj doğru şekilde gösterilmiştir. | Başarılı |
-| Bağlantının yeniden kurulması | Qwen3:4b modeli yeniden başlatılmış, Unity üzerinden NPC'ye mesaj gönderilmiş ve modelden başarılı cevap alınmıştır. | Başarılı |
+### Test 1 - Ollama Bağlantısına Ulaşılamaması
 
-### Model Bulunamaması Testinde Yapılan Düzeltme
+**Test yöntemi:**
 
-Model bulunamaması testinin ilk denemesinde Ollama sunucusu HTTP 404 hatası döndürmesine rağmen NPC genel bağlantı hatası mesajı göstermiştir.
+Ollama uygulaması tamamen kapatılarak yerel LLM sunucusunun erişilemez olması sağlanmıştır. Ardından Unity üzerinden NPC'ye mesaj gönderilerek bağlantı davranışı test edilmiştir.
 
-Unity Console çıktısında aşağıdaki hata görülmüştür:
+**NPC'nin gerçek cevabı:**
+
+"İstasyon yapay zekâ sistemine ulaşamıyorum. Ollama'nın çalıştığını kontrol et."
+
+**Unity Console çıktısı:**
+
+```text
+Ollama bağlantı/API hatası.
+HTTP: 0
+Hata: Cannot connect to destination host
+```
+
+**Beklenen davranış:** Bağlantı hatasının yakalanması, oyuncuya bilgilendirici mesaj gösterilmesi ve oyunun çökmemesi.
+
+**Gerçekleşen sonuç:** Bağlantı hatası yakalanmış ve oyuncuya hata mesajı gösterilmiştir. Oyun çalışmaya devam etmiştir.
+
+**Test sonucu:** Başarılı.
+
+**Test ekran görüntüsü:**
+
+<img width="1213" height="866" alt="Ekran görüntüsü 2026-11-05 235720" src="https://github.com/user-attachments/assets/6bed6bca-7b7d-4b66-bd12-a75fafabbc1e" />
+
+### Test 2 - Zaman Aşımı (Timeout)
+
+**Test yöntemi:**
+
+Unity Inspector üzerinden zaman aşımı değeri test amacıyla geçici olarak 1 saniyeye düşürülmüştür. Qwen3:4b modeli durdurulduktan sonra Unity üzerinden NPC'ye mesaj gönderilmiştir.
+
+**NPC'nin gerçek cevabı:**
+
+"NPC'nin yanıt süresi doldu. Biraz sonra tekrar deneyebilir misin?"
+
+**Unity Console çıktısı:**
+
+```text
+Ollama bağlantı/API hatası.
+HTTP: 0
+Hata: Request timeout
+```
+
+**Beklenen davranış:** İstek belirlenen süre içerisinde tamamlanmadığında zaman aşımı hatasının yakalanması ve oyuncuya bilgi verilmesi.
+
+**Gerçekleşen sonuç:** İstek zaman aşımına uğramış, hata yakalanmış ve oyuncuya bilgilendirici mesaj gösterilmiştir. Oyun çökmemiştir.
+
+**Test sonucu:** Başarılı.
+
+<img width="1208" height="856" alt="image" src="https://github.com/user-attachments/assets/e541fe2b-0bbb-4718-96e7-2892a83e5c5b" />
+
+
+
+### Test 3 - Modelin Bulunamaması
+
+**Test yöntemi:**
+
+Model bulunamama durumunu test etmek amacıyla `OllamaNPC.cs` dosyasındaki model adı geçici olarak aşağıdaki şekilde değiştirilmiştir:
+
+```csharp
+private string model = "qwen3:4b-olmayan-test";
+```
+
+Ollama bağlantısı kullanılarak mevcut olmayan model adıyla istek gönderilmiştir.
+
+**İlk denemede alınan Unity Console çıktısı:**
 
 ```text
 HTTP: 404
@@ -359,21 +440,74 @@ HTTP/1.1 404 Not Found
 model 'qwen3:4b-olmayan-test' not found
 ```
 
-Sorunun, hata kontrolünde Ollama'nın döndürdüğü `model ... not found` ifadesinin doğru sınıflandırılmamasından kaynaklandığı belirlenmiştir.
+İlk denemede HTTP 404 hatası alınmasına rağmen NPC, modelin bulunamadığını belirten özel mesaj yerine genel bağlantı hatası mesajını göstermiştir.
 
-`OllamaNPC.cs` dosyasındaki hata kontrolü düzenlenerek model adının bulunamadığını belirten yanıtların da doğru algılanması sağlanmıştır.
+Bunun üzerine `OllamaNPC.cs` dosyasındaki hata sınıflandırma kontrolü düzenlenmiştir. Hata içeriğinde model adının ve `not found` ifadesinin birlikte bulunması da kontrol edilecek şekilde koşul genişletilmiştir.
 
-Test tekrarlandığında NPC aşağıdaki özel hata mesajını göstermiştir:
+**Düzeltme sonrasında NPC'nin gerçek cevabı:**
 
-> İstenen yerel model bulunamadı. Ollama model kurulumunu kontrol et.
+"İstenen yerel model bulunamadı. Ollama model kurulumunu kontrol et."
 
-Böylece model bulunamaması durumu doğru şekilde sınıflandırılmıştır.
+**Beklenen davranış:** Model bulunamadığında HTTP 404 hatasının doğru sınıflandırılması ve oyuncuya modelin bulunamadığını belirten mesaj gösterilmesi.
+
+**Gerçekleşen sonuç:** Kod düzeltmesinden sonra test tekrarlanmış ve model bulunamama durumu doğru şekilde tespit edilmiştir. Oyuncuya özel hata mesajı gösterilmiştir.
+
+**Test sonucu:** Başarılı.
+
+**Test ekran görüntüsü:**
+
+<img width="1212" height="860" alt="image" src="https://github.com/user-attachments/assets/4664b372-e0bf-4cbe-9d6e-e0a80f63859b" />
+
+
+### Test 4 - Bağlantının Yeniden Kurulması
+
+**Test yöntemi:**
+
+Hata testlerinin ardından gerçek model tekrar kullanılabilir duruma getirilmiştir. CMD üzerinden aşağıdaki komut çalıştırılmıştır:
+
+```cmd
+ollama run qwen3:4b
+```
+
+Modelin çalıştığı `ollama ps` komutuyla kontrol edilmiştir. Daha sonra Unity üzerinden NPC'ye yeni bir mesaj gönderilmiştir.
+
+**NPC'nin gerçek cevabı:**
+
+"Merhaba! İstasyon rehberimiz olarak yardımcı olmaktan memnunuz. Şu an ne yapabilirsiniz?"
+
+**Gerçekleşen karar:**
+
+- `action`: `NONE`
+- `persuasionStatus`: `NONE`
+
+**Beklenen davranış:** Yerel model tekrar çalıştırıldıktan sonra Unity'nin Ollama ile iletişim kurabilmesi ve NPC'nin normal cevap üretebilmesi.
+
+**Gerçekleşen sonuç:** Qwen3:4b modeli yeniden başlatılmış ve Unity üzerinden başarılı şekilde cevap alınmıştır.
+
+**Test sonucu:** Başarılı.
+
+**Test ekran görüntüsü:**
+
+<img width="1215" height="848" alt="Ekran görüntüsü 2026-11-06 001646" src="https://github.com/user-attachments/assets/67355fc3-b220-4cb7-bcd9-11b4ea49a073" />
 
 ### Test Sonrası Ayarların Geri Yüklenmesi
 
-Hata testleri tamamlandıktan sonra geçici test değişiklikleri geri alınmıştır. Model adı tekrar `qwen3:4b`, zaman aşımı değeri ise 60 saniye olarak ayarlanmıştır.
+Testler sırasında kullanılan geçici ayarlar normale döndürülmüştür:
+
+- Model adı tekrar `qwen3:4b` olarak ayarlanmıştır.
+- Zaman aşımı süresi tekrar 60 saniyeye yükseltilmiştir.
+- Geçici model adı değişikliği geri alınmıştır.
 
 Son kontrolde Qwen3:4b modeli yeniden çalıştırılmış ve Unity üzerinden NPC'nin normal şekilde cevap verdiği doğrulanmıştır.
+
+### Hata Testlerinin Genel Sonuçları
+
+| Test | Gerçekleşen sonuç | Durum |
+|---|---|---|
+| Ollama bağlantısına ulaşılamaması | Bağlantı hatası yakalandı ve oyuncuya bilgi verildi. | Başarılı |
+| Zaman aşımı | Timeout hatası yakalandı ve oyuncuya bilgi verildi. | Başarılı |
+| Modelin bulunamaması | Hata sınıflandırması düzeltildikten sonra özel hata mesajı gösterildi. | Başarılı |
+| Bağlantının yeniden kurulması | Qwen3:4b yeniden başlatıldı ve NPC normal cevap verdi. | Başarılı |
 
 
 # 5.2. LLM Diyalog Testleri
@@ -495,10 +629,11 @@ Sonuç: Başarılı. NPC oyun dışı bilgileri uydurmamış ve kendi rolünü k
 
 <img width="1155" height="846" alt="Ekran görüntüsü 2026-11-05 185435" src="https://github.com/user-attachments/assets/e367f9e8-f6ae-454e-9e29-c215ba95a535" />
 ## 5.2.1. Genel Test Sonuçları
-| Diyalog testi |               | Sonuç |
-| Silah yükseltme için ikna|    | Başarılı |
-| Maksimum can yükseltme |      | Başarılı |
-| Boss hakkında bilgi |         | Başarılı |
-| Israr ve emir verme  |        | Başarılı |
-| Hakaret  |                    | Kısmen başarılı |
-| Alakasız konuşma  |           | Başarılı |
+| Diyalog Testi | Sonuç |
+|---|---|
+| Silah yükseltme için ikna | Başarılı |
+| Maksimum can yükseltme | Başarılı |
+| Boss hakkında bilgi | Başarılı |
+| Israr ve emir verme | Başarılı |
+| Hakaret | Başarılı |
+| Alakasız konuşma | Başarılı |
