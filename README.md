@@ -3,9 +3,9 @@
 **Ders:** Yazılım Geliştirme Laboratuvarı-I  
 **Üniversite:** Kocaeli Üniversitesi – Teknoloji Fakültesi  
 **Bölüm:** Bilişim Sistemleri Mühendisliği  
-**Proje Ekibi:** [1. Ekip üyesi] – [2. Ekip üyesi]  
+**Proje Ekibi:** [Alpaslan Ertan - 241307078] – [İlyas Can Yarımkol - 241307131]  
 **Tarih:** 06.11.2026  
-**Oyun Motoru:** Unity 6  
+**Oyun Motoru:** Unity 6.5(6000.5.2f1)  
 **Programlama Dili:** C#
 
 ---
@@ -79,6 +79,267 @@ Oyuncunun gerekli yardımları alamaması veya boss karşısında başarısız o
 ![Devolarium boss mücadelesi](docs/images/devolarium-boss.png)
 
 ---
+
+## 2. Otonom AI Companion Sistemi
+
+Bu bölümde, oyunun ilk aşamasında oyuncuya eşlik eden otonom AI Companion sisteminin mimarisi, NavMesh tabanlı hareket mekanizması, karar verme yapısı ve görev tamamlama süreci açıklanmaktadır.
+
+Oyuncunun uzay istasyonuna ulaşabilmesi için mayınlarla çevrili bölgede bulunan şalterin etkinleştirilmesi gerekmektedir. Oyuncu gemisiyle bu bölgeden geçmeye çalıştığında mayınlar nedeniyle zarar gördüğünden, şalter görevini Companion üstlenmektedir. Companion, Unity NavMesh sistemi üzerinden şalterin bulunduğu hedef konuma ilerler, şalteri etkinleştirir ve ardından oyuncunun gemisinin yanına geri döner. Şalter etkinleştirildiğinde portalın enerji kalkanı kaldırılarak oyuncunun ilerlemesi sağlanır.
+
+### 2.1. Companion Sisteminin Genel Mimarisi
+
+Companion sistemi, farklı sorumluluklara sahip C# scriptleri kullanılarak geliştirilmiştir. Sistem; oyuncuyla etkileşim kurulması, yardım isteğinin alınması, hedef konuma hareket edilmesi, şalterin etkinleştirilmesi ve oyuncuya geri dönülmesi aşamalarından oluşmaktadır.
+
+Sistemde kullanılan temel scriptler ve görevleri aşağıda açıklanmıştır.
+
+| Script | Görevi |
+|---|---|
+| `BotTiklamaKontrol.cs` | Oyuncunun Companion üzerine tıklamasını kontrol eder ve yardım panelini açar. |
+| `BotYardimMesajiKontrol.cs` | Oyuncu gemisi Companion'a yaklaştığında yardım mesajını gösterir. |
+| `BotYardimPanelKontrol.cs` | Yardım panelindeki EVET ve HAYIR butonlarının işlemlerini yönetir. |
+| `CompanionFollow.cs` | Companion'ın gemiyi takip etme davranışını içeren yardımcı script'tir. |
+| `CompanionMission.cs` | NavMesh hareketini, görev hedeflerini ve FSM durumlarını yönetir. |
+| `SalterKontrol.cs` | Şalteri etkinleştirir, görsel durumunu günceller ve portal enerji kalkanını devre dışı bırakır. |
+
+Görev yönetiminde temel sorumluluk `CompanionMission.cs` içerisindedir. Bu script, `CompanionFollow` bileşenini başlangıçta devre dışı bırakarak takip davranışını kendi `FollowShip` durumu üzerinden yürütür.
+
+### 2.2. NavMesh Tabanlı Hareket Mekanizması
+
+Companion'ın otonom hareketi Unity'nin NavMesh sistemi kullanılarak gerçekleştirilmiştir. Companion nesnesinde bulunan `NavMeshAgent` bileşeni, karakterin tanımlanmış hareket alanında hedefe ilerlemesini sağlar.
+
+NavMesh, oyun ortamında karakterin hareket edebileceği yüzeyleri tanımlar. NavMesh Agent ise bu yüzeyler üzerinde yol hesaplama, hedefe ilerleme ve engellerden kaçınma işlemlerini gerçekleştirir.
+
+Companion üzerinde kullanılan temel NavMesh Agent ayarları şöyledir:
+
+| Parametre | Değer |
+|---|---:|
+| Agent Type | Humanoid |
+| Speed | 11 |
+| Angular Speed | 120 |
+| Acceleration | 8 |
+| Auto Braking | Açık |
+| Obstacle Avoidance Quality | High Quality |
+| Obstacle Avoidance Radius | 0.907 |
+| Obstacle Avoidance Priority | 50 |
+| Auto Repath | Açık |
+
+Companion görevi başlatıldığında öncelikle `NavMeshAgent` bileşeninin etkin olup olmadığı kontrol edilir. `NavMesh.SamplePosition()` metodu ile Companion'ın yakınında uygun bir NavMesh noktası aranır. Ardından `agent.Warp()` kullanılarak karakterin geçerli NavMesh konumunda bulunması sağlanır.
+
+Hedef konum belirlenirken de `NavMesh.SamplePosition()` kullanılarak hedefe yakın uygun bir NavMesh noktası bulunur. Daha sonra `CalculatePath()` metodu ile hedefe ulaşmak için bir yol hesaplanır.
+
+Hesaplanan yolun `NavMeshPathStatus.PathComplete` durumunda olması gerekir. Bu koşul sağlanırsa `SetDestination()` çağrılarak Companion'ın hedefe ilerlemesi sağlanır. Böylece karakterin yalnızca hedef koordinatına yönelmesi değil, hedefe ulaşabilecek geçerli bir yolun bulunması da kontrol edilir.
+
+`CompanionMission` içerisinde tanımlanan `stoppingDistance` değeri, görev başlatıldığında NavMesh Agent bileşenine atanır. Bu nedenle çalışma anındaki durma mesafesi, Inspector üzerindeki Agent değerinden farklı olabilir.
+
+**Şekil 5. Companion'ın oyuncu gemisini takip etmesi**
+
+![Companion'ın oyuncu gemisini takip etmesi](docs/images/companion-takip.png)
+
+### 2.3. Mayınların Engel Olarak Tanımlanması
+
+Oyuncunun kendi gemisiyle şalterin bulunduğu istasyona ulaşmasını engelleyen mayınlar, Unity ortamında fiziksel engeller olarak tanımlanmıştır.
+
+Mayın prefablarına `NavMesh Obstacle` bileşeni eklenmiştir. Bu bileşen, mayınların NavMesh üzerindeki hareket alanını etkilemesini sağlar.
+
+Mayınlarda kullanılan temel ayarlar şöyledir:
+
+| Parametre | Değer |
+|---|---|
+| Shape | Box |
+| Size | X: 1.898, Y: 1.9, Z: 1.794 |
+| Carve | Açık |
+| Move Threshold | 0.1 |
+| Time To Stationary | 0.5 |
+| Carve Only Stationary | Açık |
+
+`Carve` özelliği, engelin bulunduğu bölgede NavMesh üzerinde geçilemeyen bir alan oluşturulmasını sağlar. `Carve Only Stationary` seçeneği açık olduğundan, bu işlem engel hareketsiz durumdayken uygulanır.
+
+Buna ek olarak Companion'ın NavMesh Agent bileşenindeki `Obstacle Avoidance` özelliği `High Quality` seviyesinde yapılandırılmıştır. Böylece Companion'ın hareketi sırasında engellerden kaçınma davranışının desteklenmesi amaçlanmıştır.
+
+**Şekil 6. Mayın prefabında NavMesh Obstacle bileşeni**
+
+![Mayın prefabında NavMesh Obstacle ayarları](docs/images/navmesh-obstacle.png)
+
+**Şekil 7. Companion NavMesh Agent ayarları**
+
+![Companion NavMesh Agent ayarları](docs/images/navmesh-agent.png)
+
+### 2.4. FSM Tabanlı Karar Mekanizması
+
+Companion'ın görev davranışı, `CompanionMission.cs` içerisinde tanımlanan Sonlu Durum Makinesi (Finite State Machine - FSM) ile yönetilmektedir.
+
+FSM, Companion'ın o an hangi görevi gerçekleştirdiğini belirler. Sistem içerisinde üç temel durum bulunmaktadır:
+
+**1. FollowShip (Gemiyi Takip Etme)**
+
+Companion, oyuncunun gemisinin yan ve arka tarafında belirlenen hedef konumu takip eder. `GemiYanindakiHedef()` metodu kullanılarak geminin konumuna ve yönüne göre takip noktası hesaplanır.
+
+**2. GoingToSwitch (Şaltere Gitme)**
+
+Oyuncu yardım isteğini kabul ettiğinde `BaslatSalterGorevi()` metodu çağrılır. Hedef için geçerli bir NavMesh yolu bulunursa Companion bu duruma geçer ve şalterin bulunduğu konuma doğru hareket eder.
+
+**3. ReturningToShip (Gemiye Geri Dönme)**
+
+Companion şaltere ulaştığında `SalterKontrol.SalteriAktifEt()` metodu çağrılır. Şalter etkinleştirildikten sonra Companion, oyuncunun gemisinin yanındaki hedef konuma yönlendirilir. Hedefe ulaştığında tekrar `FollowShip` durumuna geçer.
+
+Durum geçişleri aşağıdaki diyagramda gösterilmiştir:
+
+```mermaid
+stateDiagram-v2
+    [*] --> FollowShip
+
+    FollowShip --> GoingToSwitch: Oyuncu EVET der ve geçerli yol bulunur
+    GoingToSwitch --> ReturningToShip: Şaltere ulaşılır ve şalter etkinleştirilir
+    ReturningToShip --> FollowShip: Gemi yanındaki hedefe ulaşılır
+```
+
+Bu yapı sayesinde Companion'ın takip, görev yerine gitme ve geri dönme davranışları birbirinden ayrılmıştır.
+
+### 2.5. Oyuncu ile Etkileşim ve Görev Başlatma
+
+Oyuncunun Companion'dan yardım isteyebilmesi için öncelikle gemisiyle Companion'a yaklaşması gerekir.
+
+`BotYardimMesajiKontrol.cs` scripti, gemi ile Companion arasındaki mesafeyi `Vector3.Distance()` metodu kullanarak hesaplar. Mesafe 8 birim veya daha az olduğunda Companion'ın üzerinde yardım mesajı gösterilir.
+
+Mesajın ekran üzerindeki konumunu belirlemek için `Camera.WorldToScreenPoint()` metodu kullanılır. Böylece dünya koordinatlarındaki Companion konumu ekran koordinatlarına dönüştürülür.
+
+Oyuncu Companion'a tıkladığında `BotTiklamaKontrol.cs` içerisinde Raycast işlemi gerçekleştirilir. Tıklanan nesnenin Companion olup olmadığı kontrol edilir. Uygun durumda yardım paneli açılır.
+
+Yardım panelinde iki seçenek bulunmaktadır:
+
+- **EVET:** Yardım isteğini kabul eder ve `CompanionMission.BaslatSalterGorevi()` metodunu çağırır.
+- **HAYIR:** Yardım panelini kapatır ve görev başlatılmaz.
+
+Bu etkileşim sayesinde Companion'ın görev davranışı doğrudan oyuncunun verdiği komutla başlatılır.
+
+### 2.6. Şalter Görevinin Gerçekleştirilmesi
+
+Oyuncu yardım isteğini kabul ettikten sonra Companion'ın hedefi şalterin bulunduğu konum olarak belirlenir. `BaslatSalterGorevi()` metodu, gerekli kontrolleri gerçekleştirdikten sonra uygun bir NavMesh yolu bulunması durumunda FSM durumunu `GoingToSwitch` olarak değiştirir.
+
+Görev sırasında `HasArrived()` metodu ile hedefe ulaşılıp ulaşılmadığı kontrol edilir.
+
+Bu kontrolde:
+
+- NavMesh Agent bileşeninin etkin olması,
+- Agent'ın NavMesh üzerinde bulunması,
+- Yol hesaplamasının devam ediyor olmaması,
+- Geçerli bir yolun bulunması,
+- Yol durumunun `PathComplete` olması,
+- Kalan mesafenin durma mesafesine ulaşması
+
+gibi koşullar değerlendirilir.
+
+Companion şaltere ulaştığında `SalterKontrol.SalteriAktifEt()` metodu çağrılır. Bu metot şalterin aktif durumunu değiştirir, görsel rengini günceller ve portalın enerji kalkanı nesnesini devre dışı bırakır.
+
+Şalter etkinleştirildikten sonra Companion, oyuncunun gemisinin yanındaki takip konumuna yönelir. Bu konuma ulaştığında tekrar `FollowShip` durumuna geçer.
+
+**Şekil 8. Companion'ın şalter görevini gerçekleştirmesi**
+
+![Companion'ın şalter görevini gerçekleştirmesi](docs/images/companion-gorev.png)
+
+### 2.7. Companion Karar ve Görev Akış Diyagramı
+
+Aşağıdaki diyagram, oyuncunun yardım isteğinden başlayarak Companion'ın şaltere ulaşması ve oyuncunun yanına geri dönmesine kadar gerçekleşen işlem sırasını göstermektedir.
+
+```mermaid
+flowchart TD
+    A([Oyun Başlar]) --> B[Companion gemiyi takip eder]
+    B --> C{Oyuncu Companion'a yaklaştı mı?}
+
+    C -- Hayır --> B
+    C -- Evet --> D[Yardım mesajı gösterilir]
+
+    D --> E{Oyuncu Companion'a tıkladı mı?}
+    E -- Hayır --> B
+    E -- Evet --> F[Yardım paneli açılır]
+
+    F --> G{Oyuncu EVET dedi mi?}
+    G -- Hayır --> B
+    G -- Evet --> H[BaslatSalterGorevi çağrılır]
+
+    H --> I[NavMesh hedefi ve yol hesaplanır]
+    I --> J{Geçerli ve tam yol bulundu mu?}
+
+    J -- Hayır --> K[Görev başlatılmaz ve takip durumu korunur]
+    K --> B
+
+    J -- Evet --> L[GoingToSwitch durumuna geçilir]
+    L --> M[Companion şaltere ilerler]
+    M --> N{Şaltere ulaşıldı mı?}
+
+    N -- Hayır --> M
+    N -- Evet --> O[Şalter etkinleştirilir]
+
+    O --> P[Portal enerji kalkanı kaldırılır]
+    P --> R[ReturningToShip durumuna geçilir]
+    R --> S[Companion geminin yanına döner]
+    S --> T{Gemi yanındaki hedefe ulaşıldı mı?}
+
+    T -- Hayır --> S
+    T -- Evet --> U[FollowShip durumuna geçilir]
+    U --> B
+```
+
+Bu diyagram, `CompanionMission.cs`, `BotYardimPanelKontrol.cs` ve `SalterKontrol.cs` scriptleri arasındaki temel görev akışını özetlemektedir.
+
+### 2.8. Test ve Performans Değerlendirmesi
+
+Otonom Companion sisteminin değerlendirilmesi amacıyla farklı başlangıç konumlarında görev tamamlama testleri gerçekleştirilmiştir.
+
+Testlerde Companion'ın farklı konumlardan şaltere ulaşabilmesi, mayınların yakınında hareket edebilmesi, portal çevresinden görev yapabilmesi ve uzun mesafeden görevini tamamlayarak oyuncunun yanına dönebilmesi incelenmiştir.
+
+Gerçekleştirilen testlerin sonuçları aşağıdaki tabloda gösterilmiştir:
+
+| Test | Başlangıç koşulu | Sonuç | Görev tamamlama süresi |
+|---|---|---|---:|
+| 1 | Oyunun varsayılan başlangıç konumu | Başarılı | 34,11 saniye |
+| 2 | Mayınların yakını | Başarılı | 8,37 saniye |
+| 3 | Portal kapısının yakını | Başarılı | 27,68 saniye |
+| 4 | Haritanın en uzak köşesi | Başarılı | 37,20 saniye |
+
+**Test sonuçlarının özeti:**
+
+- Toplam test sayısı: 4
+- Başarılı görev sayısı: 4
+- Başarısız görev sayısı: 0
+- Başarı oranı: %100
+- Ortalama görev tamamlama süresi: 26,84 saniye
+
+Başarı oranı aşağıdaki formülle hesaplanmıştır:
+
+\[
+Başarı\ Oranı = \frac{Başarılı\ Test\ Sayısı}{Toplam\ Test\ Sayısı}\times 100
+\]
+
+Ortalama görev tamamlama süresi ise gerçekleştirilen dört testin sürelerinin aritmetik ortalaması alınarak hesaplanmıştır.
+
+**Test 1. Varsayılan başlangıç konumu**
+
+![Varsayılan başlangıç konumu test sonucu](docs/images/test-01-varsayilan-baslangic.png)
+
+**Test 2. Mayınların yakını**
+
+![Mayınların yakını test sonucu](docs/images/test-02-mayin-yakini.png)
+
+**Test 3. Portal kapısının yakını**
+
+![Portal kapısı yakını test sonucu](docs/images/test-03-portal-yakini.png)
+
+**Test 4. Haritanın en uzak köşesi**
+
+![Haritanın en uzak köşesi test sonucu](docs/images/test-04-haritanin-uzak-kosesi.png)
+
+Gerçekleştirilen testlerde Companion, belirtilen dört farklı başlangıç koşulunda görevini başarıyla tamamlamıştır. Ölçülen süreler, görev başlangıcından Companion'ın oyuncu gemisinin yanındaki hedefe geri ulaşmasına kadar geçen süreyi ifade etmektedir.
+
+### 2.9. Sensör Tabanlı Gözlem Mekanizması ve Geliştirme Gereksinimi
+
+Proje isterlerinde otonom kahramanın kendi konumunu ve engellere olan mesafesini/açısını algılayabilmesi için sensör tabanlı bir gözlem mekanizması (ör. Raycast) kullanılması istenmektedir.
+
+Mevcut sistemde `BotTiklamaKontrol.cs` içerisinde kullanılan Raycast, oyuncunun fareyle Companion nesnesine tıklamasını algılamak amacıyla kullanılmaktadır. Bu işlem, Companion'ın çevresindeki engelleri algılayan bir sensör mekanizması değildir.
+
+Bu nedenle Companion'ın çevresini algılayarak engellere ilişkin mesafe ve yön bilgisi elde etmesini sağlayacak ayrı bir sensör mekanizması mevcut sistemin tamamlanması gereken geliştirme adımlarından biridir.
+
+Bu mekanizmanın eklenmesiyle NavMesh tabanlı yol bulma sisteminin çevresel gözlem yeteneğiyle desteklenmesi hedeflenmektedir.
 
 
 # 3. Yerel LLM Destekli NPC Entegrasyonu

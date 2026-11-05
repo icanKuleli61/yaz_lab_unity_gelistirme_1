@@ -30,7 +30,8 @@ public class CompanionMission : MonoBehaviour
 
     private MissionState state = MissionState.FollowShip;
     private float nextUpdateTime;
-
+    private float testBaslangicZamani;
+    private bool testDevamEdiyor;
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
@@ -108,6 +109,11 @@ public class CompanionMission : MonoBehaviour
         if (SetDestination(switchTransform.position))
         {
             state = MissionState.GoingToSwitch;
+
+            testBaslangicZamani = Time.time;
+            testDevamEdiyor = true;
+
+            Debug.Log("YARDIMCI GOREVI BASLADI");
         }
     }
 
@@ -150,10 +156,19 @@ public class CompanionMission : MonoBehaviour
                 state = MissionState.ReturningToShip;
             }
         }
-
         if (state == MissionState.ReturningToShip && HasArrived())
         {
             state = MissionState.FollowShip;
+
+            if (testDevamEdiyor)
+            {
+                float gecenSure = Time.time - testBaslangicZamani;
+
+                Debug.Log("YARDIMCI GOREVI BASARILI");
+                Debug.Log("GOREV TAMAMLANMA SURESI: " + gecenSure.ToString("F2") + " saniye");
+
+                testDevamEdiyor = false;
+            }
         }
     }
 
