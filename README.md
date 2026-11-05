@@ -65,8 +65,6 @@ Tehdit, hakaret, emir ve yalnızca ısrar etmek ikna için yeterli değildir.
 
 <details>
 <summary>NPC System Prompt - Tam Metin</summary>
-
-```csharp
 public static class NPCSystemPrompt
 {
     public const string Prompt = @"
@@ -227,6 +225,8 @@ JSON tam olarak şu yapıda olmalıdır:
 }
 ";
 }
+```csharp
+
 
 
 ### Ek Diyalog Talimatları
